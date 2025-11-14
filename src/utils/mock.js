@@ -1,0 +1,103 @@
+export const CATEGORIES = ["Все", "Финансы", "Инструменты", "Игры", "Государственные", "Транспорт"];
+
+export const APPS = [
+    {
+        id: "sbp-pay",
+        name: "СБПэй",
+        rating: 4.6,
+        popularity: 92, 
+        createdAt: "2025-01-10",
+        editorsChoice: true,
+        category: "Финансы",
+        developer: "НСПК",
+        age: "6+",
+        description:
+            "Удобные и быстрые платежи через Систему быстрых платежей. Оплачивайте покупки, переводите деньги друзьям и контролируйте свои финансы в одном приложении.",
+        screenshots: [
+            "https://via.placeholder.com/800x400?text=СБПэй+1",
+            "https://via.placeholder.com/800x400?text=СБПэй+2",
+            "https://via.placeholder.com/800x400?text=СБПэй+3",
+        ],
+        accentColor: "#2563eb",
+        funFact: "Первые тестовые платежи через СБП проходили всего между несколькими банками.",
+    },
+    {
+        id: "gosuslugi",
+        name: "Госуслуги",
+        rating: 4.4,
+        popularity: 88,
+        createdAt: "2024-10-01",
+        editorsChoice: true,
+        category: "Государственные",
+        developer: "Минцифры России",
+        age: "0+",
+        description:
+            "Все государственные услуги в одном месте. Записывайтесь к врачу, оплачивайте штрафы, подавайте заявления и получайте уведомления от государства.",
+        screenshots: [
+            "https://via.placeholder.com/800x400?text=Госуслуги+1",
+            "https://via.placeholder.com/800x400?text=Госуслуги+2",
+            "https://via.placeholder.com/800x400?text=Госуслуги+3",
+        ],
+        accentColor: "#0ea5e9",
+        funFact: "Через Госуслуги пользователи получают миллионы уведомлений в день.",
+    },
+    {
+        id: "yandex-go",
+        name: "Яндекс Go",
+        rating: 4.8,
+        popularity: 97,
+        createdAt: "2025-02-01",
+        editorsChoice: true,
+        category: "Транспорт",
+        developer: "Яндекс",
+        age: "12+",
+        description:
+            "Такси, каршеринг, доставка еды и продукты — всё в одном приложении. Быстрые поездки, удобная оплата и бонусы.",
+        screenshots: [
+            "https://via.placeholder.com/800x400?text=Яндекс+Go+1",
+            "https://via.placeholder.com/800x400?text=Яндекс+Go+2",
+            "https://via.placeholder.com/800x400?text=Яндекс+Go+3",
+        ],
+        accentColor: "#f59e0b",
+        funFact: "В среднем поездка через сервис бронируется раз в несколько секунд.",
+    },
+    {
+        id: "game-rpg",
+        name: "Легенды Севера",
+        rating: 4.9,
+        popularity: 85,
+        createdAt: "2025-03-12",
+        editorsChoice: true,
+        category: "Игры",
+        developer: "Nordic Games",
+        age: "16+",
+        description:
+            "Эпическая RPG в мире северной мифологии. Соберите команду героев, сражайтесь с боссами и открывайте новые локации.",
+        screenshots: [
+            "https://via.placeholder.com/800x400?text=Легенды+Севера+1",
+            "https://via.placeholder.com/800x400?text=Легенды+Севера+2",
+            "https://via.placeholder.com/800x400?text=Легенды+Севера+3",
+        ],
+        accentColor: "#a855f7",
+        funFact: "Некоторые боссы вдохновлены реальными легендами северных народов.",
+    },
+    {
+        id: "tools-cleaner",
+        name: "Super Cleaner",
+        rating: 4.2,
+        popularity: 70,
+        createdAt: "2025-04-20",
+        editorsChoice: false,
+        category: "Инструменты",
+        developer: "CleanTech",
+        age: "0+",
+        description:
+            "Очистка кэша, оптимизация памяти и ускорение работы вашего устройства. Простое и понятное приложение для поддержания порядка на смартфоне.",
+        screenshots: [
+            "https://via.placeholder.com/800x400?text=Super+Cleaner+1",
+            "https://via.placeholder.com/800x400?text=Super+Cleaner+2",
+        ],
+        accentColor: "#10b981",
+        funFact: "Пользователи чаще всего чистят память вечером перед сном.",
+    },
+];
