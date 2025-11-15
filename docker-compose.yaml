@@ -1,0 +1,9 @@
+services:
+  frontend:
+    container_name: hih-2025-front
+    build:
+      dockerfile: deploy/Dockerfile
+      context: .
+    ports:
+      - '${APP_PORT:-8080}:80'
+    restart: unless-stopped
