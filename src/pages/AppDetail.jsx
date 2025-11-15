@@ -15,6 +15,7 @@ import {
     Paper,
     LinearProgress,
     Divider,
+    Link,
 } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -672,6 +673,7 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             fullWidth
                             size='large'
                             variant='contained'
+                            href={app.apkLink}
                             startIcon={<DownloadIcon />}
                             sx={{
                                 borderRadius: 3,
@@ -688,7 +690,6 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             }}>
                             Установить
                         </Button>
-
                         <Button
                             variant='outlined'
                             size='large'
