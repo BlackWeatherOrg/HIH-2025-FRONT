@@ -540,7 +540,7 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                                 transform: 'translateY(-2px)',
                             },
                         }}>
-                        📥 Установить приложение
+                        Установить
                     </Button>
                 </Box>
             </Box>
