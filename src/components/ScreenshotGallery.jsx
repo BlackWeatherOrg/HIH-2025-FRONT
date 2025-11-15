@@ -1,113 +1,203 @@
-import React from "react";
-import { Dialog, DialogContent, AppBar, Toolbar, IconButton, Typography, Box } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import React, { useEffect } from "react";
+import { Dialog, Box, IconButton, Typography, Stack, useMediaQuery } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import Slide from "@mui/material/Slide";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return (
-        <Slide
-            direction='up'
-            ref={ref}
-            {...props}
-        />
-    );
-});
+import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 
 const ScreenshotGallery = ({ open, onClose, app, index, onChangeIndex }) => {
-    if (!app) return null;
+    const isMobile = useMediaQuery("(max-width:600px)");
 
-    const handlePrev = () => {
-        onChangeIndex(index === 0 ? app.screenshots.length - 1 : index - 1);
-    };
+    if (!app || !app.screenshots || app.screenshots.length === 0) {
+        return null;
+    }
 
-    const handleNext = () => {
-        onChangeIndex(index === app.screenshots.length - 1 ? 0 : index + 1);
-    };
+    const total = app.screenshots.length;
+    const current = Math.max(0, Math.min(index || 0, total - 1));
+    const src = app.screenshots[current];
+
+    const prev = () => onChangeIndex?.((current - 1 + total) % total);
+    const next = () => onChangeIndex?.((current + 1) % total);
+
+    useEffect(() => {
+        if (!open) return;
+        const key = e => {
+            if (e.key === "Escape") onClose?.();
+            if (e.key === "ArrowLeft") prev();
+            if (e.key === "ArrowRight") next();
+        };
+        window.addEventListener("keydown", key);
+        return () => window.removeEventListener("keydown", key);
+    }, [open, current]);
 
     return (
         <Dialog
-            fullScreen
             open={open}
             onClose={onClose}
-            TransitionComponent={Transition}
+            fullScreen
             PaperProps={{
                 sx: {
-                    bgcolor: "#0f172a",
-                    color: "#f9fafb",
+                    backgroundColor: "transparent",
+                    m: 0,
+                },
+            }}
+            BackdropProps={{
+                sx: {
+                    background: "rgba(255,255,255,0.75)", 
+                    backdropFilter: "blur(6px)",
                 },
             }}>
-            <AppBar
-                position='sticky'
-                color='transparent'
-                elevation={0}
-                sx={{ bgcolor: "rgba(15,23,42,0.95)" }}>
-                <Toolbar>
-                    <IconButton
-                        edge='start'
-                        color='inherit'
-                        onClick={onClose}>
-                        <ArrowBackIcon />
-                    </IconButton>
-                    <Typography
-                        variant='h6'
-                        sx={{ flex: 1 }}>
-                        {app.name}
-                    </Typography>
-                    <Typography
-                        variant='body2'
-                        sx={{ color: "#e5e7eb" }}>
-                        {index + 1} / {app.screenshots.length}
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-
-            <DialogContent
+            <Box
                 sx={{
+                    height: "100vh",
+                    width: "100vw",
+                    overflow: "hidden", 
                     display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    position: "relative",
-                    p: 0,
+                    flexDirection: "column",
+                    p: { xs: 2, sm: 3 },
+                    boxSizing: "border-box",
                 }}>
-                <IconButton
-                    onClick={handlePrev}
-                    sx={{
-                        position: "absolute",
-                        left: 16,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        bgcolor: "rgba(15,23,42,0.8)",
-                        "&:hover": { bgcolor: "rgba(15,23,42,1)" },
-                    }}>
-                    <ChevronLeftIcon htmlColor='#f9fafb' />
-                </IconButton>
 
                 <Box
-                    component='img'
-                    src={app.screenshots[index]}
-                    alt={`${app.name} screenshot ${index + 1}`}
                     sx={{
-                        maxWidth: "100%",
-                        maxHeight: "100vh",
-                        objectFit: "contain",
-                    }}
-                />
-
-                <IconButton
-                    onClick={handleNext}
-                    sx={{
-                        position: "absolute",
-                        right: 16,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        bgcolor: "rgba(15,23,42,0.8)",
-                        "&:hover": { bgcolor: "rgba(15,23,42,1)" },
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        mb: 2,
+                        width: "100%",
+                        maxWidth: 900,
+                        mx: "auto",
                     }}>
-                    <ChevronRightIcon htmlColor='#f9fafb' />
-                </IconButton>
-            </DialogContent>
+                    <Stack
+                        direction='row'
+                        spacing={1}
+                        alignItems='center'>
+                        <PhoneIphoneIcon sx={{ color: "#2563eb" }} />
+                        <Box>
+                            <Typography
+                                variant='subtitle1'
+                                fontWeight={600}>
+                                {app.name}
+                            </Typography>
+                            <Typography
+                                variant='caption'
+                                color='text.secondary'>
+                                Скриншот {current + 1} из {total}
+                            </Typography>
+                        </Box>
+                    </Stack>
+
+                    <IconButton
+                        onClick={onClose}
+                        sx={{
+                            borderRadius: 999,
+                            border: "1px solid #e5e7eb",
+                            bgcolor: "#ffffff",
+                            "&:hover": { bgcolor: "#f1f5f9" },
+                        }}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                <Box
+                    sx={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 2,
+                        width: "100%",
+                        maxWidth: 900,
+                        mx: "auto",
+                    }}>
+                    {!isMobile && total > 1 && (
+                        <IconButton
+                            onClick={prev}
+                            sx={{
+                                borderRadius: "50%",
+                                border: "1px solid #e5e7eb",
+                                bgcolor: "#ffffff",
+                                boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+                                "&:hover": {
+                                    bgcolor: "#eff6ff",
+                                    borderColor: "#bfdbfe",
+                                },
+                            }}>
+                            <ChevronLeftIcon />
+                        </IconButton>
+                    )}
+
+                    <Box
+                        sx={{
+                            width: "100%",
+                            maxWidth: isMobile ? 300 : 400,
+                            borderRadius: 5,
+                            p: 1.5,
+                            bgcolor: "#ffffff",
+                            border: "1px solid #e5e7eb",
+                            boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
+                        }}>
+                        <Box
+                            sx={{
+                                width: "100%",
+                                maxWidth: isMobile ? 300 : 400,
+                                maxHeight: isMobile ? "70vh" : "75vh", 
+                                borderRadius: 5,
+                                overflow: "hidden",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                bgcolor: "#000",
+                            }}>
+                            <img
+                                src={src}
+                                alt='screenshot'
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "contain", 
+                                    display: "block",
+                                }}
+                            />
+                        </Box>
+                    </Box>
+
+                    {!isMobile && total > 1 && (
+                        <IconButton
+                            onClick={next}
+                            sx={{
+                                borderRadius: "50%",
+                                border: "1px solid #e5e7eb",
+                                bgcolor: "#ffffff",
+                                boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+                                "&:hover": {
+                                    bgcolor: "#eff6ff",
+                                    borderColor: "#bfdbfe",
+                                },
+                            }}>
+                            <ChevronRightIcon />
+                        </IconButton>
+                    )}
+                </Box>
+
+                {isMobile && total > 1 && (
+                    <Stack
+                        direction='row'
+                        alignItems='center'
+                        justifyContent='center'
+                        spacing={2}
+                        mt={2}>
+                        <IconButton onClick={prev}>
+                            <ChevronLeftIcon />
+                        </IconButton>
+                        <Typography variant='body2'>
+                            {current + 1} / {total}
+                        </Typography>
+                        <IconButton onClick={next}>
+                            <ChevronRightIcon />
+                        </IconButton>
+                    </Stack>
+                )}
+            </Box>
         </Dialog>
     );
 };

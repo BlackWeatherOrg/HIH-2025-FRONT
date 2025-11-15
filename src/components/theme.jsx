@@ -19,7 +19,7 @@ const theme = createTheme({
         },
     },
     shape: {
-        borderRadius: 20,
+        borderRadius: 4,
     },
     typography: {
         fontFamily: '"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -28,7 +28,7 @@ const theme = createTheme({
         MuiCard: {
             styleOverrides: {
                 root: {
-                    borderRadius: 20,
+                    borderRadius: 10,
                 },
             },
         },

@@ -1,6 +1,8 @@
-import React from "react";
-import { Box, Stack } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Stack, Fab } from "@mui/material";
 import { keyframes } from "@emotion/react";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+
 import PageWrapper from "components/PageWrapper";
 import MainAppBar from "components/mainscreen/Mainbar";
 import DailyRecommendationSection from "components/mainscreen/DailyRecommendationSection";
@@ -9,7 +11,6 @@ import AppsSliderBlock from "components/mainscreen/AppsSliderBlock";
 import SearchAndSortBar from "components/mainscreen/SearchAndSortBar";
 import CategoriesChipsRow from "components/mainscreen/CategoriesChipsRow";
 import AllAppsSection from "components/mainscreen/AllAppsSection";
-
 const fadeUp = keyframes`
   from { 
     opacity: 0; 
@@ -22,7 +23,9 @@ const fadeUp = keyframes`
 `;
 
 const MainScreen = ({
-    apps,
+    apps, 
+    list, 
+    categories, 
     selectedCategory,
     onSelectCategory,
     onOpenCategories,
@@ -37,18 +40,8 @@ const MainScreen = ({
     dailyRecommendation,
     achievements,
 }) => {
-    let list = apps;
-
-    if (selectedCategory && selectedCategory !== "Все") {
-        list = list.filter(a => a.category === selectedCategory);
-    }
-
-    if (searchQuery.trim()) {
-        const q = searchQuery.trim().toLowerCase();
-        list = list.filter(a => a.name.toLowerCase().includes(q));
-    }
-
-    list = [...list].sort((a, b) => {
+    let listToShow = Array.isArray(list) ? [...list] : [];
+    listToShow.sort((a, b) => {
         if (sortBy === "popularity") {
             return (b.popularity || 0) - (a.popularity || 0);
         }
@@ -67,6 +60,7 @@ const MainScreen = ({
 
     const newApps = apps
         .filter(a => {
+            if (!a.createdAt) return false;
             const created = new Date(a.createdAt);
             const now = new Date();
             const diffDays = (now - created) / (1000 * 60 * 60 * 24);
@@ -77,14 +71,30 @@ const MainScreen = ({
 
     const editorsChoice = apps.filter(a => a.editorsChoice).slice(0, 8);
 
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 400);
+        };
+        window.addEventListener("scroll", handleScroll);
+        handleScroll();
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
     return (
         <PageWrapper>
             <MainAppBar onOpenCategories={onOpenCategories} />
 
-            <Box sx={{ 
-                mt: 2, 
-                animation: `${fadeUp} 0.5s ease-out` 
-            }}>
+            <Box
+                sx={{
+                    mt: 2,
+                    animation: `${fadeUp} 0.5s ease-out`,
+                }}>
                 <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.1s both` }}>
                     <DailyRecommendationSection
                         dailyRecommendation={dailyRecommendation}
@@ -118,7 +128,9 @@ const MainScreen = ({
                     </Box>
                 )}
 
-                <Stack spacing={2.5} mb={3}>
+                <Stack
+                    spacing={2.5}
+                    mb={3}>
                     {popularApps.length > 0 && (
                         <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.5s both` }}>
                             <AppsSliderBlock
@@ -127,6 +139,8 @@ const MainScreen = ({
                                 items={popularApps}
                                 onOpenApp={onOpenApp}
                                 variant='plain'
+                                autoPlay
+                                autoPlayInterval={5000} 
                             />
                         </Box>
                     )}
@@ -139,6 +153,8 @@ const MainScreen = ({
                                 items={newApps}
                                 onOpenApp={onOpenApp}
                                 variant='plain'
+                                autoPlay 
+                                autoPlayInterval={7000} 
                             />
                         </Box>
                     )}
@@ -165,6 +181,7 @@ const MainScreen = ({
                     />
 
                     <CategoriesChipsRow
+                        categories={categories}
                         selectedCategory={selectedCategory}
                         onSelectCategory={onSelectCategory}
                     />
@@ -172,12 +189,28 @@ const MainScreen = ({
 
                 <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.9s both` }}>
                     <AllAppsSection
-                        list={list}
+                        list={listToShow}
                         isLoading={isLoading}
                         onOpenApp={onOpenApp}
                     />
                 </Box>
             </Box>
+
+            {showScrollTop && (
+                <Fab
+                    color='primary'
+                    size='medium'
+                    onClick={scrollToTop}
+                    sx={{
+                        position: "fixed",
+                        bottom: 24,
+                        right: 24,
+                        zIndex: 1300,
+                        boxShadow: "0 10px 30px rgba(15,23,42,0.3)",
+                    }}>
+                    <KeyboardArrowUpIcon />
+                </Fab>
+            )}
         </PageWrapper>
     );
 };

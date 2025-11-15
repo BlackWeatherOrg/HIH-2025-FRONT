@@ -1,111 +1,118 @@
 import React from "react";
-import { Card, CardContent, Box, Avatar, Typography, Stack, Rating, Chip } from "@mui/material";
+import { Paper, Box, Stack, Typography, Rating, Chip } from "@mui/material";
 
 const AppCard = ({ app, onClick }) => {
+    const hasIcon = !!app.iconLink;
+
     return (
-        <Card
+        <Paper
+            elevation={0}
             onClick={onClick}
             sx={{
-                display: "flex",
-                alignItems: "stretch",
+                p: 1.8,
                 borderRadius: 3,
-                overflow: "hidden",
-                cursor: "pointer",
                 border: "1px solid #e5e7eb",
+                display: "flex",
+                gap: 1.6,
+                cursor: "pointer",
+                transition: "transform 0.15s ease, box-shadow 0.15s ease, border 0.15s ease",
                 bgcolor: "#ffffff",
-                transition: "transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease",
                 "&:hover": {
-                    transform: "translateY(-3px)",
-                    boxShadow: "0 18px 35px rgba(15,23,42,0.13)",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 14px 30px rgba(15,23,42,0.14)",
                     borderColor: "rgba(37,99,235,0.45)",
                 },
             }}>
             <Box
                 sx={{
-                    width: 74,
+                    width: 56,
+                    height: 56,
+                    borderRadius: 2.5,
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    bgcolor: "#eef2ff",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    p: 2,
                 }}>
-                <Avatar
-                    sx={{
-                        width: 54,
-                        height: 54,
-                        borderRadius: 2,
-                        fontWeight: 700,
-                        fontSize: 24,
-                        background: `radial-gradient(circle at 25% 0, #ffffff, ${
-                            app.accentColor || "#2563eb"
-                        })`,
-                        color: "#0f172a",
-                    }}>
-                    {app.name[0]}
-                </Avatar>
-            </Box>
-
-            <CardContent sx={{ flex: 1, minWidth: 0 }}>
-                <Stack
-                    direction='row'
-                    alignItems='center'
-                    spacing={1}
-                    mb={0.5}>
-                    <Typography
-                        variant='subtitle1'
-                        fontWeight={600}
-                        noWrap
-                        sx={{ maxWidth: "70%" }}>
-                        {app.name}
-                    </Typography>
-                    <Chip
-                        label={app.category}
-                        size='small'
+                {hasIcon ? (
+                    <Box
+                        component='img'
+                        src={app.iconLink}
+                        alt={app.name}
                         sx={{
-                            ml: "auto",
-                            borderRadius: 999,
-                            bgcolor: "#eff6ff",
-                            color: "#1d4ed8",
-                            fontSize: 11,
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            display: "block",
+                        }}
+                        onError={e => {
+                            e.currentTarget.style.display = "none";
                         }}
                     />
-                </Stack>
+                ) : (
+                    <Typography
+                        variant='h6'
+                        fontWeight={700}
+                        sx={{ color: "#1f2933" }}>
+                        {app.name?.[0] || "?"}
+                    </Typography>
+                )}
+            </Box>
 
-                <Stack
-                    direction='row'
-                    spacing={1}
-                    alignItems='center'
-                    mb={0.5}>
-                    <Rating
-                        value={app.rating}
-                        precision={0.1}
-                        readOnly
-                        size='small'
-                    />
-                    <Typography
-                        variant='body2'
-                        color='text.secondary'>
-                        {app.rating.toFixed(1)}
-                    </Typography>
-                    <Typography
-                        variant='body2'
-                        color='text.secondary'>
-                        • {app.age}
-                    </Typography>
-                </Stack>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                    variant='subtitle1'
+                    fontWeight={600}
+                    noWrap>
+                    {app.name}
+                </Typography>
 
                 <Typography
                     variant='body2'
                     color='text.secondary'
-                    sx={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                    }}>
-                    {app.description}
+                    noWrap>
+                    {app.developer}
                 </Typography>
-            </CardContent>
-        </Card>
+
+                <Stack
+                    direction='row'
+                    spacing={1}
+                    alignItems='center'
+                    mt={0.8}
+                    flexWrap='wrap'>
+                    {app.rating != null && (
+                        <Stack
+                            direction='row'
+                            spacing={0.5}
+                            alignItems='center'>
+                            <Rating
+                                value={app.rating}
+                                precision={0.1}
+                                size='small'
+                                readOnly
+                            />
+                            <Typography
+                                variant='body2'
+                                color='text.secondary'>
+                                {app.rating.toFixed(1)}
+                            </Typography>
+                        </Stack>
+                    )}
+
+                    {app.category && (
+                        <Chip
+                            label={app.category}
+                            size='small'
+                            sx={{
+                                borderRadius: 999,
+                                bgcolor: "#f3f4f6",
+                            }}
+                        />
+                    )}
+                </Stack>
+            </Box>
+        </Paper>
     );
 };
 

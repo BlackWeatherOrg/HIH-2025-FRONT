@@ -24,6 +24,10 @@ import SecurityIcon from "@mui/icons-material/Security";
 import StorageIcon from "@mui/icons-material/Storage";
 import LanguageIcon from "@mui/icons-material/Language";
 import PeopleIcon from "@mui/icons-material/People";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import CollectionsIcon from "@mui/icons-material/Collections";
 import { keyframes } from "@emotion/react";
 import PageWrapper from "../components/PageWrapper";
 
@@ -69,9 +73,9 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
     ];
 
     const stats = [
-        { label: "Размер", value: app.size || "85 МБ", icon: <StorageIcon /> },
+        { label: "Размер", value: app.size || app.apkSize || "85 МБ", icon: <StorageIcon /> },
         { label: "Версия", value: app.version || "2.4.1", icon: <LanguageIcon /> },
-        { label: "Пользователей", value: "1M+", icon: <PeopleIcon /> },
+        { label: "Пользователей", value: app.downloads || "1M+", icon: <PeopleIcon /> },
         { label: "Безопасность", value: "Высокая", icon: <SecurityIcon /> },
     ];
 
@@ -85,7 +89,8 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                     bgcolor: "rgba(248,250,252,0.95)",
                     backdropFilter: "blur(20px)",
                     borderBottom: "1px solid #e5e7eb",
-                    background: 'linear-gradient(135deg, rgba(248,250,252,0.95) 0%, rgba(241,245,249,0.95) 100%)',
+                    background:
+                        "linear-gradient(135deg, rgba(248,250,252,0.95) 0%, rgba(241,245,249,0.95) 100%)",
                 }}>
                 <Toolbar>
                     <IconButton
@@ -93,23 +98,23 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                         color='inherit'
                         onClick={onBack}
                         sx={{
-                            '&:hover': {
-                                bgcolor: 'rgba(37, 99, 235, 0.1)',
-                                transform: 'scale(1.1)',
+                            "&:hover": {
+                                bgcolor: "rgba(37, 99, 235, 0.1)",
+                                transform: "scale(1.1)",
                             },
-                            transition: 'all 0.3s ease'
+                            transition: "all 0.3s ease",
                         }}>
                         <ArrowBackIcon />
                     </IconButton>
                     <Typography
                         variant='h6'
-                        sx={{ 
+                        sx={{
                             flex: 1,
                             fontWeight: 700,
-                            background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
-                            backgroundClip: 'text',
-                            WebkitBackgroundClip: 'text',
-                            color: 'transparent',
+                            background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
+                            backgroundClip: "text",
+                            WebkitBackgroundClip: "text",
+                            color: "transparent",
                         }}
                         noWrap>
                         {app.name}
@@ -117,27 +122,28 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                 </Toolbar>
             </AppBar>
 
-            <Box sx={{ 
-                mt: 2, 
-                animation: `${fadeUp} 0.5s ease-out`,
-                position: 'relative',
-            }}>
-                {/* Анимированный фон */}
+            <Box
+                sx={{
+                    mt: 2,
+                    animation: `${fadeUp} 0.5s ease-out`,
+                    position: "relative",
+                }}>
                 <Box
                     sx={{
-                        position: 'absolute',
+                        position: "absolute",
                         top: 50,
                         right: 50,
                         width: 100,
                         height: 100,
-                        background: 'radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%)',
-                        borderRadius: '50%',
+                        background:
+                            "radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%)",
+                        borderRadius: "50%",
                         animation: `${floatAnimation} 6s ease-in-out infinite`,
                         zIndex: 0,
                     }}
                 />
 
-                <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Box sx={{ position: "relative", zIndex: 1 }}>
                     <Paper
                         elevation={0}
                         sx={{
@@ -145,49 +151,85 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             p: { xs: 2.5, md: 3 },
                             borderRadius: 4,
                             border: "1px solid #e5e7eb",
-                            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                            background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
                             display: "flex",
                             flexDirection: { xs: "column", sm: "row" },
                             gap: 3,
                             alignItems: { xs: "flex-start", sm: "center" },
-                            position: 'relative',
-                            overflow: 'hidden',
-                            '&::before': {
+                            position: "relative",
+                            overflow: "hidden",
+                            "&::before": {
                                 content: '""',
-                                position: 'absolute',
+                                position: "absolute",
                                 top: 0,
                                 left: 0,
                                 right: 0,
                                 height: 3,
-                                background: `linear-gradient(90deg, ${app.accentColor || '#2563eb'}, ${app.accentColor || '#3b82f6'}80)`,
+                                background: `linear-gradient(90deg, ${
+                                    app.accentColor || "#2563eb"
+                                }, ${(app.accentColor || "#3b82f6") + "80"})`,
                             },
                         }}>
-                        <Avatar
+
+                        <Box
                             sx={{
                                 width: 100,
                                 height: 100,
                                 borderRadius: 4,
-                                fontSize: 36,
-                                fontWeight: 700,
-                                background: `linear-gradient(135deg, ${app.accentColor || '#2563eb'} 0%, ${app.accentColor || '#3b82f6'}80 100%)`,
-                                color: "white",
+                                overflow: "hidden",
                                 flexShrink: 0,
+                                bgcolor: "#eef2ff",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                boxShadow: "0 8px 25px rgba(37, 99, 235, 0.25)",
                                 animation: `${floatAnimation} 3s ease-in-out infinite`,
-                                boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
                             }}>
-                            {app.name[0]}
-                        </Avatar>
+                            {app.iconLink ? (
+                                <Box
+                                    component='img'
+                                    src={app.iconLink}
+                                    alt={app.name}
+                                    sx={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                        display: "block",
+                                    }}
+                                    onError={e => {
+                                        e.currentTarget.style.display = "none";
+                                    }}
+                                />
+                            ) : (
+                                <Avatar
+                                    sx={{
+                                        width: "100%",
+                                        height: "100%",
+                                        borderRadius: 4,
+                                        fontSize: 36,
+                                        fontWeight: 700,
+                                        background: `linear-gradient(135deg, ${
+                                            app.accentColor || "#2563eb"
+                                        } 0%, ${(app.accentColor || "#3b82f6") + "80"} 100%)`,
+                                        color: "white",
+                                    }}>
+                                    {app.name[0]}
+                                </Avatar>
+                            )}
+                        </Box>
 
-                        <Box flex={1} minWidth={0}>
+                        <Box
+                            flex={1}
+                            minWidth={0}>
                             <Typography
                                 variant='h4'
                                 fontWeight={800}
                                 gutterBottom
                                 sx={{
-                                    background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
-                                    backgroundClip: 'text',
-                                    WebkitBackgroundClip: 'text',
-                                    color: 'transparent',
+                                    background: "linear-gradient(135deg, #1e293b 0%, #475569 100%)",
+                                    backgroundClip: "text",
+                                    WebkitBackgroundClip: "text",
+                                    color: "transparent",
                                 }}>
                                 {app.name}
                             </Typography>
@@ -215,7 +257,7 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                                         bgcolor: "#eff6ff",
                                         border: "2px solid #dbeafe",
                                         fontWeight: 600,
-                                        fontSize: '0.8rem',
+                                        fontSize: "0.8rem",
                                     }}
                                 />
                                 <Chip
@@ -226,49 +268,58 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                                         bgcolor: "#fef3c7",
                                         border: "2px solid #fde68a",
                                         fontWeight: 600,
-                                        fontSize: '0.8rem',
+                                        fontSize: "0.8rem",
                                     }}
                                 />
                                 <Stack
                                     direction='row'
                                     spacing={1}
-                                    alignItems="center">
+                                    alignItems='center'>
                                     <Rating
                                         value={app.rating}
                                         precision={0.1}
                                         readOnly
                                         size='medium'
-                                        sx={{ color: '#f59e0b' }}
+                                        sx={{ color: "#f59e0b" }}
                                     />
                                     <Typography
                                         variant='body1'
                                         fontWeight={700}
-                                        sx={{ color: '#1e293b' }}>
+                                        sx={{ color: "#1e293b" }}>
                                         {app.rating.toFixed(1)}
                                     </Typography>
                                 </Stack>
                             </Stack>
 
                             <Box mb={2}>
-                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                                    <Typography variant="body2" color="text.secondary">
+                                <Stack
+                                    direction='row'
+                                    justifyContent='space-between'
+                                    alignItems='center'
+                                    mb={1}>
+                                    <Typography
+                                        variant='body2'
+                                        color='text.secondary'>
                                         Популярность
                                     </Typography>
-                                    <Typography variant="body2" fontWeight={600} color="#2563eb">
+                                    <Typography
+                                        variant='body2'
+                                        fontWeight={600}
+                                        color='#2563eb'>
                                         {popularityLabel}
                                     </Typography>
                                 </Stack>
                                 <LinearProgress
-                                    variant="determinate"
+                                    variant='determinate'
                                     value={getPopularityPercent()}
                                     sx={{
                                         height: 8,
                                         borderRadius: 999,
-                                        bgcolor: '#f1f5f9',
-                                        '& .MuiLinearProgress-bar': {
-                                            bgcolor: '#2563eb',
+                                        bgcolor: "#f1f5f9",
+                                        "& .MuiLinearProgress-bar": {
+                                            bgcolor: "#2563eb",
                                             borderRadius: 999,
-                                            background: `linear-gradient(90deg, #2563eb, #3b82f6)`,
+                                            background: "linear-gradient(90deg, #2563eb, #3b82f6)",
                                         },
                                     }}
                                 />
@@ -277,15 +328,15 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             {app.editorsChoice && (
                                 <Chip
                                     size='medium'
-                                    icon={<StarIcon sx={{ fontSize: 18, color: '#f59e0b' }} />}
+                                    icon={<StarIcon sx={{ fontSize: 18, color: "#f59e0b" }} />}
                                     label='Выбор редакции'
                                     sx={{
                                         borderRadius: 2,
                                         bgcolor: "#fef3c7",
                                         border: "2px solid #facc15",
                                         fontWeight: 700,
-                                        fontSize: '0.8rem',
-                                        color: '#92400e',
+                                        fontSize: "0.8rem",
+                                        color: "#92400e",
                                     }}
                                 />
                             )}
@@ -302,37 +353,59 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             border: "1px solid #e5e7eb",
                             animation: `${fadeUp} 0.6s ease-out`,
                         }}>
-                        <Typography
-                            variant='h6'
-                            fontWeight={700}
-                            mb={2}
-                            sx={{
-                                background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
-                                backgroundClip: 'text',
-                                WebkitBackgroundClip: 'text',
-                                color: 'transparent',
-                            }}>
-                            📊 Характеристики
-                        </Typography>
                         <Stack
-                            direction={{ xs: 'column', sm: 'row' }}
+                            direction='row'
+                            spacing={1.5}
+                            alignItems='center'
+                            mb={2}>
+                            <BarChartIcon sx={{ color: "#2563eb" }} />
+                            <Typography
+                                variant='h6'
+                                fontWeight={700}
+                                sx={{
+                                    background: "linear-gradient(135deg, #1e293b 0%, #475569 100%)",
+                                    backgroundClip: "text",
+                                    WebkitBackgroundClip: "text",
+                                    color: "transparent",
+                                }}>
+                                Характеристики
+                            </Typography>
+                        </Stack>
+
+                        <Stack
+                            direction={{ xs: "column", sm: "row" }}
                             spacing={2}
-                            divider={<Divider orientation="vertical" flexItem />}>
+                            divider={
+                                <Divider
+                                    orientation='vertical'
+                                    flexItem
+                                />
+                            }>
                             {stats.map((stat, index) => (
-                                <Box key={index} textAlign="center" sx={{ flex: 1 }}>
+                                <Box
+                                    key={index}
+                                    textAlign='center'
+                                    sx={{ flex: 1 }}>
                                     <Box
                                         sx={{
-                                            color: '#2563eb',
+                                            color: "#2563eb",
                                             mb: 1,
-                                            animation: `${floatAnimation} 3s ease-in-out infinite ${index * 0.2}s`,
-                                        }}
-                                    >
+                                            animation: `${floatAnimation} 3s ease-in-out infinite ${
+                                                index * 0.2
+                                            }s`,
+                                        }}>
                                         {stat.icon}
                                     </Box>
-                                    <Typography variant="body2" color="text.secondary" mb={0.5}>
+                                    <Typography
+                                        variant='body2'
+                                        color='text.secondary'
+                                        mb={0.5}>
                                         {stat.label}
                                     </Typography>
-                                    <Typography variant="h6" fontWeight={700} color="#1e293b">
+                                    <Typography
+                                        variant='h6'
+                                        fontWeight={700}
+                                        color='#1e293b'>
                                         {stat.value}
                                     </Typography>
                                 </Box>
@@ -350,23 +423,30 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             border: "1px solid #e5e7eb",
                             animation: `${fadeUp} 0.7s ease-out`,
                         }}>
-                        <Typography
-                            variant='h6'
-                            fontWeight={700}
-                            mb={2}
-                            sx={{
-                                background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
-                                backgroundClip: 'text',
-                                WebkitBackgroundClip: 'text',
-                                color: 'transparent',
-                            }}>
-                            📝 О приложении
-                        </Typography>
+                        <Stack
+                            direction='row'
+                            spacing={1.5}
+                            alignItems='center'
+                            mb={2}>
+                            <InfoOutlinedIcon sx={{ color: "#2563eb" }} />
+                            <Typography
+                                variant='h6'
+                                fontWeight={700}
+                                sx={{
+                                    background: "linear-gradient(135deg, #1e293b 0%, #475569 100%)",
+                                    backgroundClip: "text",
+                                    WebkitBackgroundClip: "text",
+                                    color: "transparent",
+                                }}>
+                                О приложении
+                            </Typography>
+                        </Stack>
+
                         <Typography
                             variant='body1'
                             color='text.secondary'
                             lineHeight={1.8}
-                            sx={{ fontSize: '1.05rem' }}>
+                            sx={{ fontSize: "1.05rem" }}>
                             {app.description}
                         </Typography>
                     </Paper>
@@ -381,30 +461,45 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             border: "1px solid #e5e7eb",
                             animation: `${fadeUp} 0.8s ease-out`,
                         }}>
-                        <Typography
-                            variant='h6'
-                            fontWeight={700}
-                            mb={2}
-                            sx={{
-                                background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
-                                backgroundClip: 'text',
-                                WebkitBackgroundClip: 'text',
-                                color: 'transparent',
-                            }}>
-                            ✨ Основные возможности
-                        </Typography>
+                        <Stack
+                            direction='row'
+                            spacing={1.5}
+                            alignItems='center'
+                            mb={2}>
+                            <AutoAwesomeIcon sx={{ color: "#7c3aed" }} />
+                            <Typography
+                                variant='h6'
+                                fontWeight={700}
+                                sx={{
+                                    background: "linear-gradient(135deg, #1e293b 0%, #475569 100%)",
+                                    backgroundClip: "text",
+                                    WebkitBackgroundClip: "text",
+                                    color: "transparent",
+                                }}>
+                                Основные возможности
+                            </Typography>
+                        </Stack>
+
                         <Stack spacing={2}>
                             {features.map((feature, index) => (
-                                <Stack key={index} direction="row" spacing={2} alignItems="center">
+                                <Stack
+                                    key={index}
+                                    direction='row'
+                                    spacing={2}
+                                    alignItems='center'>
                                     <Box
                                         sx={{
-                                            fontSize: '24px',
-                                            animation: `${floatAnimation} 3s ease-in-out infinite ${index * 0.3}s`,
-                                        }}
-                                    >
+                                            fontSize: "24px",
+                                            animation: `${floatAnimation} 3s ease-in-out infinite ${
+                                                index * 0.3
+                                            }s`,
+                                        }}>
                                         {feature.icon}
                                     </Box>
-                                    <Typography variant="body1" color="text.primary" fontWeight={500}>
+                                    <Typography
+                                        variant='body1'
+                                        color='text.primary'
+                                        fontWeight={500}>
                                         {feature.text}
                                     </Typography>
                                 </Stack>
@@ -422,17 +517,25 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             justifyContent='space-between'
                             alignItems='center'
                             mb={2}>
-                            <Typography
-                                variant='h6'
-                                fontWeight={700}
-                                sx={{
-                                    background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
-                                    backgroundClip: 'text',
-                                    WebkitBackgroundClip: 'text',
-                                    color: 'transparent',
-                                }}>
-                                🖼️ Скриншоты
-                            </Typography>
+                            <Stack
+                                direction='row'
+                                spacing={1.5}
+                                alignItems='center'>
+                                <CollectionsIcon sx={{ color: "#2563eb" }} />
+                                <Typography
+                                    variant='h6'
+                                    fontWeight={700}
+                                    sx={{
+                                        background:
+                                            "linear-gradient(135deg, #1e293b 0%, #475569 100%)",
+                                        backgroundClip: "text",
+                                        WebkitBackgroundClip: "text",
+                                        color: "transparent",
+                                    }}>
+                                    Скриншоты
+                                </Typography>
+                            </Stack>
+
                             <Button
                                 variant='outlined'
                                 size='medium'
@@ -442,10 +545,10 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                                     fontWeight: 600,
                                     borderRadius: 3,
                                     px: 2.5,
-                                    border: '2px solid #e5e7eb',
-                                    '&:hover': {
-                                        border: '2px solid #2563eb',
-                                        bgcolor: 'rgba(37, 99, 235, 0.05)',
+                                    border: "2px solid #e5e7eb",
+                                    "&:hover": {
+                                        border: "2px solid #2563eb",
+                                        bgcolor: "rgba(37, 99, 235, 0.05)",
                                     },
                                 }}>
                                 Открыть галерею
@@ -469,34 +572,20 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                                     key={idx}
                                     onClick={() => onOpenGallery(idx)}
                                     sx={{
-                                        minWidth: 280,
-                                        maxWidth: 320,
+                                        minWidth: 260,
+                                        maxWidth: 300,
                                         borderRadius: 3,
                                         overflow: "hidden",
                                         cursor: "pointer",
-                                        border: "2px solid #e5e7eb",
-                                        backgroundColor: "#0f172a",
-                                        transition: "all 0.3s ease",
-                                        position: 'relative',
-                                        '&::before': {
-                                            content: '""',
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            background: 'linear-gradient(45deg, rgba(37,99,235,0.1), rgba(139,92,246,0.1))',
-                                            opacity: 0,
-                                            transition: 'opacity 0.3s ease',
-                                            zIndex: 1,
-                                        },
+                                        border: "1px solid #e5e7eb",
+                                        bgcolor: "#ffffff",
+                                        transition:
+                                            "transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease",
+                                        position: "relative",
                                         "&:hover": {
-                                            transform: "translateY(-8px) scale(1.02)",
-                                            boxShadow: "0 25px 50px rgba(15,23,42,0.4)",
+                                            transform: "translateY(-6px) scale(1.02)",
+                                            boxShadow: "0 20px 40px rgba(15,23,42,0.2)",
                                             borderColor: "#2563eb",
-                                            '&::before': {
-                                                opacity: 1,
-                                            },
                                         },
                                     }}>
                                     <CardMedia
@@ -506,10 +595,8 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                                         sx={{
                                             display: "block",
                                             width: "100%",
-                                            height: 220,
+                                            height: 210,
                                             objectFit: "cover",
-                                            position: 'relative',
-                                            zIndex: 0,
                                         }}
                                     />
                                 </Card>
@@ -528,16 +615,18 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             textTransform: "none",
                             fontWeight: 700,
                             fontSize: 18,
-                            background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%)',
-                            backgroundSize: '200% 200%',
+                            background:
+                                "linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%)",
+                            backgroundSize: "200% 200%",
                             boxShadow: "0 20px 45px rgba(37,99,235,0.5)",
                             animation: `${pulseInstall} 3s ease-in-out infinite, ${shimmer} 3s ease-in-out infinite`,
-                            transition: 'all 0.3s ease',
-                            '&:hover': {
-                                background: 'linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #6d28d9 100%)',
-                                backgroundSize: '200% 200%',
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                background:
+                                    "linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #6d28d9 100%)",
+                                backgroundSize: "200% 200%",
                                 boxShadow: "0 25px 55px rgba(37,99,235,0.7)",
-                                transform: 'translateY(-2px)',
+                                transform: "translateY(-2px)",
                             },
                         }}>
                         Установить

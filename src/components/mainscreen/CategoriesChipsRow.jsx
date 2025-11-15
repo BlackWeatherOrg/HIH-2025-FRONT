@@ -1,8 +1,7 @@
 import React from "react";
 import { Box, Chip } from "@mui/material";
-import { CATEGORIES } from "utils/mock";
 
-const CategoriesChipsRow = ({ selectedCategory, onSelectCategory }) => {
+const CategoriesChipsRow = ({ categories = [], selectedCategory, onSelectCategory }) => {
     return (
         <Box
             sx={{
@@ -17,13 +16,15 @@ const CategoriesChipsRow = ({ selectedCategory, onSelectCategory }) => {
                     borderRadius: 999,
                 },
             }}>
-            {CATEGORIES.map(cat => {
-                const isActive = (!selectedCategory && cat === "Все") || selectedCategory === cat;
+            {categories.map(cat => {
+                const isAll = cat === "Все" || cat === "Все приложения";
+                const isActive = (!selectedCategory && isAll) || selectedCategory === cat;
+
                 return (
                     <Chip
                         key={cat}
                         label={cat}
-                        onClick={() => onSelectCategory(cat === "Все" ? null : cat)}
+                        onClick={() => onSelectCategory(isAll ? null : cat)}
                         clickable
                         disableRipple
                         sx={{

@@ -5,9 +5,11 @@ import AppDetail from "pages/AppDetail";
 import CategoriesScreen from "pages/CategoriesScreen";
 import MainScreen from "pages/MainScreen";
 import Onboarding from "components/Onboarding";
-import CategoryModal from "components/CategoryModal"; // Добавляем импорт
-import { APPS, CATEGORIES } from "utils/mock";
+import CategoryModal from "components/CategoryModal"; 
 import theme from "components/theme";
+import { fetchCategories } from "http";
+import { fetchApplications } from "http";
+import { useDebouncedValue } from "utils/useDebouncedValue";
 
 const STORAGE_KEYS = {
     onboarding: "rustore_onboarding_seen",
@@ -19,14 +21,21 @@ const getTodayStr = () => new Date().toISOString().slice(0, 10);
 
 function App() {
     const [screen, setScreen] = useState("onboarding");
+
+    const [apps, setApps] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    const [filteredApps, setFilteredApps] = useState([]); 
+    const [isBaseLoading, setIsBaseLoading] = useState(true);
+    const [isSearchLoading, setIsSearchLoading] = useState(false);
+
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedApp, setSelectedApp] = useState(null);
-    const [categoryModalOpen, setCategoryModalOpen] = useState(false); // Новое состояние для модалки
+
+    const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
     const [galleryOpen, setGalleryOpen] = useState(false);
     const [galleryIndex, setGalleryIndex] = useState(0);
-
-    const [isLoading, setIsLoading] = useState(true);
 
     const [recentViewIds, setRecentViewIds] = useState([]);
     const [dailyRecommendation, setDailyRecommendation] = useState(null);
@@ -34,42 +43,104 @@ function App() {
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("popularity");
 
+    const debouncedSearch = useDebouncedValue(searchQuery, 400);
+
     useEffect(() => {
         const seen = localStorage.getItem(STORAGE_KEYS.onboarding);
-        if (seen) {
-            setScreen("home");
-        } else {
-            setScreen("onboarding");
-        }
+        setScreen(seen ? "home" : "onboarding");
 
         try {
             const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.recentViews));
             if (Array.isArray(stored)) {
                 setRecentViewIds(stored);
             }
-        } catch {}
-
-        try {
-            const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.dailyRec));
-            const today = getTodayStr();
-            if (stored && stored.date === today) {
-                const app = APPS.find(a => a.id === stored.appId);
-                if (app) {
-                    setDailyRecommendation(app);
-                }
-            } else {
-                const randomApp = APPS[Math.floor(Math.random() * APPS.length)];
-                setDailyRecommendation(randomApp);
-                localStorage.setItem(
-                    STORAGE_KEYS.dailyRec,
-                    JSON.stringify({ date: today, appId: randomApp.id })
-                );
-            }
-        } catch {}
-
-        const timer = setTimeout(() => setIsLoading(false), 600);
-        return () => clearTimeout(timer);
+        } catch {
+            // ignore
+        }
     }, []);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                setIsBaseLoading(true);
+
+                const [appsFromApi, categoriesFromApi] = await Promise.all([
+                    fetchApplications(),
+                    fetchCategories(),
+                ]);
+
+                setApps(appsFromApi);
+                setCategories(categoriesFromApi);
+                setFilteredApps(appsFromApi); 
+                const today = getTodayStr();
+                let recApp = null;
+
+                try {
+                    const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.dailyRec));
+                    if (stored && stored.date === today) {
+                        recApp = appsFromApi.find(a => a.id === stored.appId) || null;
+                    }
+                } catch {
+                    // ignore
+                }
+
+                if (!recApp && appsFromApi.length > 0) {
+                    const withFact = appsFromApi.filter(a => a.funFact && a.funFact.trim());
+                    const source = withFact.length ? withFact : appsFromApi;
+                    recApp = source[Math.floor(Math.random() * source.length)];
+
+                    localStorage.setItem(
+                        STORAGE_KEYS.dailyRec,
+                        JSON.stringify({ date: today, appId: recApp.id })
+                    );
+                }
+
+                if (recApp) {
+                    setDailyRecommendation(recApp);
+                }
+            } catch (e) {
+                console.error("Ошибка загрузки данных:", e);
+            } finally {
+                setIsBaseLoading(false);
+            }
+        };
+
+        loadData();
+    }, []);
+
+    useEffect(() => {
+        if (
+            !debouncedSearch.trim() &&
+            (!selectedCategory || selectedCategory === "Все приложения")
+        ) {
+            setFilteredApps(apps);
+            return;
+        }
+
+        const loadFiltered = async () => {
+            try {
+                setIsSearchLoading(true);
+                const params = {};
+
+                if (debouncedSearch.trim()) {
+                    params.name = debouncedSearch.trim();
+                }
+
+                if (selectedCategory && selectedCategory !== "Все приложения") {
+                    params.category = selectedCategory;
+                }
+
+                const appsFromApi = await fetchApplications(params);
+                setFilteredApps(appsFromApi);
+            } catch (e) {
+                console.error("Ошибка поиска приложений:", e);
+            } finally {
+                setIsSearchLoading(false);
+            }
+        };
+
+        loadFiltered();
+    }, [debouncedSearch, selectedCategory, apps]);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEYS.recentViews, JSON.stringify(recentViewIds));
@@ -99,37 +170,35 @@ function App() {
         setGalleryOpen(false);
     };
 
-    // Новая функция для открытия модалки категории
-    const handleOpenCategory = (category) => {
+    const handleOpenCategory = category => {
         setSelectedCategory(category);
         setCategoryModalOpen(true);
     };
 
-    // Новая функция для закрытия модалки категории
     const handleCloseCategoryModal = () => {
         setCategoryModalOpen(false);
         setSelectedCategory(null);
     };
 
     const recentlyViewedApps = useMemo(
-        () => recentViewIds.map(id => APPS.find(a => a.id === id)).filter(Boolean),
-        [recentViewIds]
+        () => recentViewIds.map(id => apps.find(a => a.id === id)).filter(Boolean),
+        [recentViewIds, apps]
     );
 
     const viewsByCategory = useMemo(() => {
         const map = {};
         recentViewIds.forEach(id => {
-            const app = APPS.find(a => a.id === id);
+            const app = apps.find(a => a.id === id);
             if (!app) return;
             map[app.category] = (map[app.category] || 0) + 1;
         });
         return map;
-    }, [recentViewIds]);
+    }, [recentViewIds, apps]);
 
     const uniqueViewedCount = useMemo(() => new Set(recentViewIds).size, [recentViewIds]);
 
     const recommendedApps = useMemo(() => {
-        if (recentViewIds.length === 0) return [];
+        if (recentViewIds.length === 0 || apps.length === 0) return [];
 
         let topCategory = null;
         let maxCount = 0;
@@ -143,16 +212,17 @@ function App() {
         if (!topCategory) return [];
 
         const viewedSet = new Set(recentViewIds);
-        const candidates = APPS.filter(a => a.category === topCategory && !viewedSet.has(a.id));
+        const candidates = apps.filter(a => a.category === topCategory && !viewedSet.has(a.id));
 
         if (candidates.length === 0) {
-            return APPS.filter(a => a.category === topCategory)
+            return apps
+                .filter(a => a.category === topCategory)
                 .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
                 .slice(0, 3);
         }
 
         return candidates.slice(0, 3);
-    }, [viewsByCategory, recentViewIds]);
+    }, [viewsByCategory, recentViewIds, apps]);
 
     const achievements = useMemo(() => {
         const financeViews = viewsByCategory["Финансы"] || 0;
@@ -180,14 +250,19 @@ function App() {
         ];
     }, [viewsByCategory, uniqueViewedCount]);
 
+    const isLoading = isBaseLoading || isSearchLoading;
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
+
             {screen === "onboarding" && <Onboarding onFinish={handleFinishOnboarding} />}
 
             {screen === "home" && (
                 <MainScreen
-                    apps={APPS}
+                    apps={apps} 
+                    list={filteredApps} 
+                    categories={categories} 
                     selectedCategory={selectedCategory}
                     onSelectCategory={setSelectedCategory}
                     onOpenCategories={() => setScreen("categories")}
@@ -206,10 +281,10 @@ function App() {
 
             {screen === "categories" && (
                 <CategoriesScreen
-                    categories={CATEGORIES}
+                    categories={categories}
                     onBack={() => setScreen("home")}
-                    onSelectCategory={handleOpenCategory} // Меняем на открытие модалки
-                    apps={APPS}
+                    onSelectCategory={handleOpenCategory}
+                    apps={apps}
                     viewsByCategory={viewsByCategory}
                 />
             )}
@@ -231,12 +306,11 @@ function App() {
                 </>
             )}
 
-            {/* Модальное окно категории */}
             <CategoryModal
                 open={categoryModalOpen}
                 onClose={handleCloseCategoryModal}
                 category={selectedCategory}
-                apps={APPS}
+                apps={apps}
                 onOpenApp={handleOpenApp}
             />
         </ThemeProvider>
