@@ -13,23 +13,40 @@ import {
     Card,
     CardMedia,
     Paper,
+    LinearProgress,
+    Divider,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StarIcon from "@mui/icons-material/Star";
 import DownloadIcon from "@mui/icons-material/Download";
 import CategoryIcon from "@mui/icons-material/Category";
+import SecurityIcon from "@mui/icons-material/Security";
+import StorageIcon from "@mui/icons-material/Storage";
+import LanguageIcon from "@mui/icons-material/Language";
+import PeopleIcon from "@mui/icons-material/People";
 import { keyframes } from "@emotion/react";
 import PageWrapper from "../components/PageWrapper";
 
 const fadeUp = keyframes`
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 `;
 
 const pulseInstall = keyframes`
-  0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.35); }
-  70% { box-shadow: 0 0 0 12px rgba(37,99,235,0); }
-  100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+  50% { transform: scale(1.02); }
+  70% { box-shadow: 0 0 0 15px rgba(37,99,235,0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+`;
+
+const floatAnimation = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+`;
+
+const shimmer = keyframes`
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
 `;
 
 const AppDetail = ({ app, onBack, onOpenGallery }) => {
@@ -40,6 +57,24 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
             ? "Популярно"
             : "Набирает обороты";
 
+    const getPopularityPercent = () => {
+        return Math.min(100, (app.popularity || 0) / 10);
+    };
+
+    const features = [
+        { icon: "🔒", text: "Безопасные платежи" },
+        { icon: "🚀", text: "Высокая производительность" },
+        { icon: "📱", text: "Оптимизированный интерфейс" },
+        { icon: "🌙", text: "Ночной режим" },
+    ];
+
+    const stats = [
+        { label: "Размер", value: app.size || "85 МБ", icon: <StorageIcon /> },
+        { label: "Версия", value: app.version || "2.4.1", icon: <LanguageIcon /> },
+        { label: "Пользователей", value: "1M+", icon: <PeopleIcon /> },
+        { label: "Безопасность", value: "Высокая", icon: <SecurityIcon /> },
+    ];
+
     return (
         <PageWrapper>
             <AppBar
@@ -47,272 +82,467 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                 color='default'
                 elevation={0}
                 sx={{
-                    bgcolor: "rgba(248,250,252,0.9)",
-                    backdropFilter: "blur(10px)",
+                    bgcolor: "rgba(248,250,252,0.95)",
+                    backdropFilter: "blur(20px)",
                     borderBottom: "1px solid #e5e7eb",
+                    background: 'linear-gradient(135deg, rgba(248,250,252,0.95) 0%, rgba(241,245,249,0.95) 100%)',
                 }}>
                 <Toolbar>
                     <IconButton
                         edge='start'
                         color='inherit'
-                        onClick={onBack}>
+                        onClick={onBack}
+                        sx={{
+                            '&:hover': {
+                                bgcolor: 'rgba(37, 99, 235, 0.1)',
+                                transform: 'scale(1.1)',
+                            },
+                            transition: 'all 0.3s ease'
+                        }}>
                         <ArrowBackIcon />
                     </IconButton>
                     <Typography
                         variant='h6'
-                        sx={{ flex: 1 }}
+                        sx={{ 
+                            flex: 1,
+                            fontWeight: 700,
+                            background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
+                            backgroundClip: 'text',
+                            WebkitBackgroundClip: 'text',
+                            color: 'transparent',
+                        }}
                         noWrap>
                         {app.name}
                     </Typography>
                 </Toolbar>
             </AppBar>
 
-            <Box sx={{ mt: 2, animation: `${fadeUp} 0.35s ease-out` }}>
-                <Paper
-                    elevation={0}
+            <Box sx={{ 
+                mt: 2, 
+                animation: `${fadeUp} 0.5s ease-out`,
+                position: 'relative',
+            }}>
+                {/* Анимированный фон */}
+                <Box
                     sx={{
-                        mb: 3,
-                        p: { xs: 2.2, md: 2.8 },
-                        borderRadius: 4,
-                        border: "1px solid #e5e7eb",
-                        bgcolor: "linear-gradient(135deg,#ffffff,#f3f4ff)",
-                        display: "flex",
-                        flexDirection: { xs: "column", sm: "row" },
-                        gap: 2.5,
-                        alignItems: { xs: "flex-start", sm: "center" },
-                    }}>
-                    <Avatar
+                        position: 'absolute',
+                        top: 50,
+                        right: 50,
+                        width: 100,
+                        height: 100,
+                        background: 'radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%)',
+                        borderRadius: '50%',
+                        animation: `${floatAnimation} 6s ease-in-out infinite`,
+                        zIndex: 0,
+                    }}
+                />
+
+                <Box sx={{ position: 'relative', zIndex: 1 }}>
+                    <Paper
+                        elevation={0}
                         sx={{
-                            width: 84,
-                            height: 84,
-                            borderRadius: 6,
-                            fontSize: 34,
-                            fontWeight: 700,
-                            background: `radial-gradient(circle at 20% 0, #ffffff, ${
-                                app.accentColor || "#2563eb"
-                            })`,
-                            color: "#0f172a",
-                            flexShrink: 0,
+                            mb: 3,
+                            p: { xs: 2.5, md: 3 },
+                            borderRadius: 4,
+                            border: "1px solid #e5e7eb",
+                            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                            display: "flex",
+                            flexDirection: { xs: "column", sm: "row" },
+                            gap: 3,
+                            alignItems: { xs: "flex-start", sm: "center" },
+                            position: 'relative',
+                            overflow: 'hidden',
+                            '&::before': {
+                                content: '""',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                height: 3,
+                                background: `linear-gradient(90deg, ${app.accentColor || '#2563eb'}, ${app.accentColor || '#3b82f6'}80)`,
+                            },
                         }}>
-                        {app.name[0]}
-                    </Avatar>
+                        <Avatar
+                            sx={{
+                                width: 100,
+                                height: 100,
+                                borderRadius: 4,
+                                fontSize: 36,
+                                fontWeight: 700,
+                                background: `linear-gradient(135deg, ${app.accentColor || '#2563eb'} 0%, ${app.accentColor || '#3b82f6'}80 100%)`,
+                                color: "white",
+                                flexShrink: 0,
+                                animation: `${floatAnimation} 3s ease-in-out infinite`,
+                                boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
+                            }}>
+                            {app.name[0]}
+                        </Avatar>
 
-                    <Box
-                        flex={1}
-                        minWidth={0}>
-                        <Typography
-                            variant='h5'
-                            fontWeight={700}
-                            gutterBottom>
-                            {app.name}
-                        </Typography>
-
-                        <Typography
-                            variant='body2'
-                            color='text.secondary'
-                            mb={1.5}>
-                            {app.developer}
-                        </Typography>
-
-                        <Stack
-                            direction='row'
-                            spacing={1}
-                            alignItems='center'
-                            flexWrap='wrap'
-                            mb={1.5}>
-                            <Chip
-                                icon={<CategoryIcon sx={{ fontSize: 16 }} />}
-                                label={app.category}
-                                size='small'
+                        <Box flex={1} minWidth={0}>
+                            <Typography
+                                variant='h4'
+                                fontWeight={800}
+                                gutterBottom
                                 sx={{
-                                    borderRadius: 999,
-                                    bgcolor: "#eff6ff",
-                                    border: "1px solid #dbeafe",
-                                }}
-                            />
-                            <Chip
-                                label={app.age}
-                                size='small'
-                                sx={{
-                                    borderRadius: 999,
-                                    bgcolor: "#fef3c7",
-                                    border: "1px solid #fde68a",
-                                }}
-                            />
+                                    background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
+                                    backgroundClip: 'text',
+                                    WebkitBackgroundClip: 'text',
+                                    color: 'transparent',
+                                }}>
+                                {app.name}
+                            </Typography>
+
+                            <Typography
+                                variant='h6'
+                                color='text.secondary'
+                                mb={2}
+                                sx={{ fontWeight: 500 }}>
+                                {app.developer}
+                            </Typography>
+
                             <Stack
                                 direction='row'
-                                spacing={0.5}
-                                alignItems='center'>
-                                <Rating
-                                    value={app.rating}
-                                    precision={0.1}
-                                    readOnly
-                                    size='small'
+                                spacing={1.5}
+                                alignItems='center'
+                                flexWrap='wrap'
+                                mb={2}>
+                                <Chip
+                                    icon={<CategoryIcon sx={{ fontSize: 16 }} />}
+                                    label={app.category}
+                                    size='medium'
+                                    sx={{
+                                        borderRadius: 2,
+                                        bgcolor: "#eff6ff",
+                                        border: "2px solid #dbeafe",
+                                        fontWeight: 600,
+                                        fontSize: '0.8rem',
+                                    }}
                                 />
-                                <Typography
-                                    variant='body2'
-                                    color='text.secondary'>
-                                    {app.rating.toFixed(1)}
-                                </Typography>
+                                <Chip
+                                    label={app.age}
+                                    size='medium'
+                                    sx={{
+                                        borderRadius: 2,
+                                        bgcolor: "#fef3c7",
+                                        border: "2px solid #fde68a",
+                                        fontWeight: 600,
+                                        fontSize: '0.8rem',
+                                    }}
+                                />
+                                <Stack
+                                    direction='row'
+                                    spacing={1}
+                                    alignItems="center">
+                                    <Rating
+                                        value={app.rating}
+                                        precision={0.1}
+                                        readOnly
+                                        size='medium'
+                                        sx={{ color: '#f59e0b' }}
+                                    />
+                                    <Typography
+                                        variant='body1'
+                                        fontWeight={700}
+                                        sx={{ color: '#1e293b' }}>
+                                        {app.rating.toFixed(1)}
+                                    </Typography>
+                                </Stack>
                             </Stack>
-                        </Stack>
 
-                        <Stack
-                            direction='row'
-                            spacing={2}
-                            flexWrap='wrap'>
-                            <Stack spacing={0.2}>
-                                <Typography
-                                    variant='caption'
-                                    color='text.secondary'>
-                                    Популярность
-                                </Typography>
-                                <Typography
-                                    variant='body2'
-                                    fontWeight={600}>
-                                    {popularityLabel}
-                                </Typography>
-                            </Stack>
+                            <Box mb={2}>
+                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Популярность
+                                    </Typography>
+                                    <Typography variant="body2" fontWeight={600} color="#2563eb">
+                                        {popularityLabel}
+                                    </Typography>
+                                </Stack>
+                                <LinearProgress
+                                    variant="determinate"
+                                    value={getPopularityPercent()}
+                                    sx={{
+                                        height: 8,
+                                        borderRadius: 999,
+                                        bgcolor: '#f1f5f9',
+                                        '& .MuiLinearProgress-bar': {
+                                            bgcolor: '#2563eb',
+                                            borderRadius: 999,
+                                            background: `linear-gradient(90deg, #2563eb, #3b82f6)`,
+                                        },
+                                    }}
+                                />
+                            </Box>
+
                             {app.editorsChoice && (
                                 <Chip
-                                    size='small'
-                                    icon={<StarIcon sx={{ fontSize: 16 }} />}
+                                    size='medium'
+                                    icon={<StarIcon sx={{ fontSize: 18, color: '#f59e0b' }} />}
                                     label='Выбор редакции'
                                     sx={{
-                                        borderRadius: 999,
+                                        borderRadius: 2,
                                         bgcolor: "#fef3c7",
-                                        border: "1px solid #facc15",
-                                        fontWeight: 600,
-                                        fontSize: 12,
+                                        border: "2px solid #facc15",
+                                        fontWeight: 700,
+                                        fontSize: '0.8rem',
+                                        color: '#92400e',
                                     }}
                                 />
                             )}
-                        </Stack>
-                    </Box>
-                </Paper>
+                        </Box>
+                    </Paper>
 
-                <Paper
-                    elevation={0}
-                    sx={{
-                        mb: 3,
-                        p: { xs: 2.2, md: 2.6 },
-                        borderRadius: 4,
-                        bgcolor: "#ffffff",
-                        border: "1px solid #e5e7eb",
-                        animation: `${fadeUp} 0.45s ease-out`,
-                    }}>
-                    <Typography
-                        variant='subtitle1'
-                        fontWeight={600}
-                        mb={1.5}>
-                        О приложении
-                    </Typography>
-                    <Typography
-                        variant='body2'
-                        color='text.secondary'
-                        lineHeight={1.7}>
-                        {app.description}
-                    </Typography>
-                </Paper>
-
-                <Box
-                    sx={{
-                        mb: 3,
-                        animation: `${fadeUp} 0.55s ease-out`,
-                    }}>
-                    <Stack
-                        direction='row'
-                        justifyContent='space-between'
-                        alignItems='center'
-                        mb={1.2}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            mb: 3,
+                            p: 3,
+                            borderRadius: 4,
+                            bgcolor: "#ffffff",
+                            border: "1px solid #e5e7eb",
+                            animation: `${fadeUp} 0.6s ease-out`,
+                        }}>
                         <Typography
-                            variant='subtitle1'
-                            fontWeight={600}>
-                            Скриншоты
-                        </Typography>
-                        <Button
-                            size='small'
-                            variant='text'
-                            onClick={() => onOpenGallery(0)}
+                            variant='h6'
+                            fontWeight={700}
+                            mb={2}
                             sx={{
-                                textTransform: "none",
-                                fontWeight: 500,
-                                borderRadius: 999,
-                                px: 1.5,
+                                background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
+                                backgroundClip: 'text',
+                                WebkitBackgroundClip: 'text',
+                                color: 'transparent',
                             }}>
-                            Открыть галерею
-                        </Button>
-                    </Stack>
+                            📊 Характеристики
+                        </Typography>
+                        <Stack
+                            direction={{ xs: 'column', sm: 'row' }}
+                            spacing={2}
+                            divider={<Divider orientation="vertical" flexItem />}>
+                            {stats.map((stat, index) => (
+                                <Box key={index} textAlign="center" sx={{ flex: 1 }}>
+                                    <Box
+                                        sx={{
+                                            color: '#2563eb',
+                                            mb: 1,
+                                            animation: `${floatAnimation} 3s ease-in-out infinite ${index * 0.2}s`,
+                                        }}
+                                    >
+                                        {stat.icon}
+                                    </Box>
+                                    <Typography variant="body2" color="text.secondary" mb={0.5}>
+                                        {stat.label}
+                                    </Typography>
+                                    <Typography variant="h6" fontWeight={700} color="#1e293b">
+                                        {stat.value}
+                                    </Typography>
+                                </Box>
+                            ))}
+                        </Stack>
+                    </Paper>
+
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            mb: 3,
+                            p: 3,
+                            borderRadius: 4,
+                            bgcolor: "#ffffff",
+                            border: "1px solid #e5e7eb",
+                            animation: `${fadeUp} 0.7s ease-out`,
+                        }}>
+                        <Typography
+                            variant='h6'
+                            fontWeight={700}
+                            mb={2}
+                            sx={{
+                                background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
+                                backgroundClip: 'text',
+                                WebkitBackgroundClip: 'text',
+                                color: 'transparent',
+                            }}>
+                            📝 О приложении
+                        </Typography>
+                        <Typography
+                            variant='body1'
+                            color='text.secondary'
+                            lineHeight={1.8}
+                            sx={{ fontSize: '1.05rem' }}>
+                            {app.description}
+                        </Typography>
+                    </Paper>
+
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            mb: 3,
+                            p: 3,
+                            borderRadius: 4,
+                            bgcolor: "#ffffff",
+                            border: "1px solid #e5e7eb",
+                            animation: `${fadeUp} 0.8s ease-out`,
+                        }}>
+                        <Typography
+                            variant='h6'
+                            fontWeight={700}
+                            mb={2}
+                            sx={{
+                                background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
+                                backgroundClip: 'text',
+                                WebkitBackgroundClip: 'text',
+                                color: 'transparent',
+                            }}>
+                            ✨ Основные возможности
+                        </Typography>
+                        <Stack spacing={2}>
+                            {features.map((feature, index) => (
+                                <Stack key={index} direction="row" spacing={2} alignItems="center">
+                                    <Box
+                                        sx={{
+                                            fontSize: '24px',
+                                            animation: `${floatAnimation} 3s ease-in-out infinite ${index * 0.3}s`,
+                                        }}
+                                    >
+                                        {feature.icon}
+                                    </Box>
+                                    <Typography variant="body1" color="text.primary" fontWeight={500}>
+                                        {feature.text}
+                                    </Typography>
+                                </Stack>
+                            ))}
+                        </Stack>
+                    </Paper>
 
                     <Box
                         sx={{
-                            display: "flex",
-                            gap: 1.5,
-                            overflowX: "auto",
-                            pb: 1,
-                            "&::-webkit-scrollbar": { height: 4 },
-                            "&::-webkit-scrollbar-thumb": {
-                                backgroundColor: "#d1d5db",
-                                borderRadius: 999,
-                            },
+                            mb: 3,
+                            animation: `${fadeUp} 0.9s ease-out`,
                         }}>
-                        {app.screenshots.map((src, idx) => (
-                            <Card
-                                key={idx}
-                                onClick={() => onOpenGallery(idx)}
+                        <Stack
+                            direction='row'
+                            justifyContent='space-between'
+                            alignItems='center'
+                            mb={2}>
+                            <Typography
+                                variant='h6'
+                                fontWeight={700}
                                 sx={{
-                                    minWidth: 220,
-                                    maxWidth: 260,
+                                    background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
+                                    backgroundClip: 'text',
+                                    WebkitBackgroundClip: 'text',
+                                    color: 'transparent',
+                                }}>
+                                🖼️ Скриншоты
+                            </Typography>
+                            <Button
+                                variant='outlined'
+                                size='medium'
+                                onClick={() => onOpenGallery(0)}
+                                sx={{
+                                    textTransform: "none",
+                                    fontWeight: 600,
                                     borderRadius: 3,
-                                    overflow: "hidden",
-                                    cursor: "pointer",
-                                    border: "1px solid #e5e7eb",
-                                    backgroundColor: "#0b1120",
-                                    transition:
-                                        "transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease",
-                                    "&:hover": {
-                                        transform: "translateY(-3px)",
-                                        boxShadow: "0 20px 40px rgba(15,23,42,0.35)",
-                                        borderColor: "rgba(37,99,235,0.55)",
+                                    px: 2.5,
+                                    border: '2px solid #e5e7eb',
+                                    '&:hover': {
+                                        border: '2px solid #2563eb',
+                                        bgcolor: 'rgba(37, 99, 235, 0.05)',
                                     },
                                 }}>
-                                <CardMedia
-                                    component='img'
-                                    image={src}
-                                    alt={`${app.name} screenshot ${idx + 1}`}
-                                    sx={{
-                                        display: "block",
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
-                                    }}
-                                />
-                            </Card>
-                        ))}
-                    </Box>
-                </Box>
+                                Открыть галерею
+                            </Button>
+                        </Stack>
 
-                <Button
-                    fullWidth
-                    size='large'
-                    variant='contained'
-                    startIcon={<DownloadIcon />}
-                    sx={{
-                        borderRadius: 999,
-                        py: 1.4,
-                        textTransform: "none",
-                        fontWeight: 600,
-                        fontSize: 16,
-                        backgroundImage: "linear-gradient(135deg,#2563eb,#4f46e5)",
-                        boxShadow: "0 18px 40px rgba(37,99,235,0.45)",
-                        animation: `${pulseInstall} 2.5s ease-out infinite`,
-                        "&:hover": {
-                            backgroundImage: "linear-gradient(135deg,#1d4ed8,#4338ca)",
-                            boxShadow: "0 22px 46px rgba(37,99,235,0.6)",
-                        },
-                    }}>
-                    Установить
-                </Button>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                gap: 2,
+                                overflowX: "auto",
+                                pb: 2,
+                                "&::-webkit-scrollbar": { height: 6 },
+                                "&::-webkit-scrollbar-thumb": {
+                                    backgroundColor: "#d1d5db",
+                                    borderRadius: 999,
+                                },
+                            }}>
+                            {app.screenshots.map((src, idx) => (
+                                <Card
+                                    key={idx}
+                                    onClick={() => onOpenGallery(idx)}
+                                    sx={{
+                                        minWidth: 280,
+                                        maxWidth: 320,
+                                        borderRadius: 3,
+                                        overflow: "hidden",
+                                        cursor: "pointer",
+                                        border: "2px solid #e5e7eb",
+                                        backgroundColor: "#0f172a",
+                                        transition: "all 0.3s ease",
+                                        position: 'relative',
+                                        '&::before': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            background: 'linear-gradient(45deg, rgba(37,99,235,0.1), rgba(139,92,246,0.1))',
+                                            opacity: 0,
+                                            transition: 'opacity 0.3s ease',
+                                            zIndex: 1,
+                                        },
+                                        "&:hover": {
+                                            transform: "translateY(-8px) scale(1.02)",
+                                            boxShadow: "0 25px 50px rgba(15,23,42,0.4)",
+                                            borderColor: "#2563eb",
+                                            '&::before': {
+                                                opacity: 1,
+                                            },
+                                        },
+                                    }}>
+                                    <CardMedia
+                                        component='img'
+                                        image={src}
+                                        alt={`${app.name} screenshot ${idx + 1}`}
+                                        sx={{
+                                            display: "block",
+                                            width: "100%",
+                                            height: 220,
+                                            objectFit: "cover",
+                                            position: 'relative',
+                                            zIndex: 0,
+                                        }}
+                                    />
+                                </Card>
+                            ))}
+                        </Box>
+                    </Box>
+
+                    <Button
+                        fullWidth
+                        size='large'
+                        variant='contained'
+                        startIcon={<DownloadIcon />}
+                        sx={{
+                            borderRadius: 3,
+                            py: 1.8,
+                            textTransform: "none",
+                            fontWeight: 700,
+                            fontSize: 18,
+                            background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%)',
+                            backgroundSize: '200% 200%',
+                            boxShadow: "0 20px 45px rgba(37,99,235,0.5)",
+                            animation: `${pulseInstall} 3s ease-in-out infinite, ${shimmer} 3s ease-in-out infinite`,
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #6d28d9 100%)',
+                                backgroundSize: '200% 200%',
+                                boxShadow: "0 25px 55px rgba(37,99,235,0.7)",
+                                transform: 'translateY(-2px)',
+                            },
+                        }}>
+                        📥 Установить приложение
+                    </Button>
+                </Box>
             </Box>
         </PageWrapper>
     );

@@ -5,6 +5,7 @@ import AppDetail from "pages/AppDetail";
 import CategoriesScreen from "pages/CategoriesScreen";
 import MainScreen from "pages/MainScreen";
 import Onboarding from "components/Onboarding";
+import CategoryModal from "components/CategoryModal"; // Добавляем импорт
 import { APPS, CATEGORIES } from "utils/mock";
 import theme from "components/theme";
 
@@ -20,6 +21,7 @@ function App() {
     const [screen, setScreen] = useState("onboarding");
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedApp, setSelectedApp] = useState(null);
+    const [categoryModalOpen, setCategoryModalOpen] = useState(false); // Новое состояние для модалки
 
     const [galleryOpen, setGalleryOpen] = useState(false);
     const [galleryIndex, setGalleryIndex] = useState(0);
@@ -95,6 +97,18 @@ function App() {
 
     const handleCloseGallery = () => {
         setGalleryOpen(false);
+    };
+
+    // Новая функция для открытия модалки категории
+    const handleOpenCategory = (category) => {
+        setSelectedCategory(category);
+        setCategoryModalOpen(true);
+    };
+
+    // Новая функция для закрытия модалки категории
+    const handleCloseCategoryModal = () => {
+        setCategoryModalOpen(false);
+        setSelectedCategory(null);
     };
 
     const recentlyViewedApps = useMemo(
@@ -194,10 +208,7 @@ function App() {
                 <CategoriesScreen
                     categories={CATEGORIES}
                     onBack={() => setScreen("home")}
-                    onSelectCategory={cat => {
-                        setSelectedCategory(cat);
-                        setScreen("home");
-                    }}
+                    onSelectCategory={handleOpenCategory} // Меняем на открытие модалки
                     apps={APPS}
                     viewsByCategory={viewsByCategory}
                 />
@@ -219,6 +230,15 @@ function App() {
                     />
                 </>
             )}
+
+            {/* Модальное окно категории */}
+            <CategoryModal
+                open={categoryModalOpen}
+                onClose={handleCloseCategoryModal}
+                category={selectedCategory}
+                apps={APPS}
+                onOpenApp={handleOpenApp}
+            />
         </ThemeProvider>
     );
 }

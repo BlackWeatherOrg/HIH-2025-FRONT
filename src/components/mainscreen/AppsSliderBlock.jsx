@@ -25,7 +25,7 @@ const AppsSliderBlock = ({ title, iconType, items, onOpenApp, variant = "plain" 
             elevation={0}
             sx={{
                 mb: 3,
-                p: 2,
+                p: 3,
                 borderRadius: 3,
                 bgcolor: bg,
                 border: "1px solid #e5e7eb",
