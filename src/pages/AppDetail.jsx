@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     AppBar,
     Toolbar,
@@ -15,7 +15,9 @@ import {
     Paper,
     LinearProgress,
     Divider,
+    Fab,
 } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StarIcon from "@mui/icons-material/Star";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -78,6 +80,30 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
         { label: "Пользователей", value: app.downloads || "1M+", icon: <PeopleIcon /> },
         { label: "Безопасность", value: "Высокая", icon: <SecurityIcon /> },
     ];
+
+    const handleShare = () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set("appId", app.id);
+        const shareUrl = url.toString();
+
+        if (navigator.share) {
+            navigator
+                .share({
+                    title: app.name,
+                    text: "Посмотри это приложение в витрине RuStore",
+                    url: shareUrl,
+                })
+                .catch(() => {});
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(shareUrl);
+        } else {
+            alert("Скопируйте ссылку из адресной строки.");
+        }
+    };
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "auto" });
+    }, [app?.id]);
 
     return (
         <PageWrapper>
@@ -170,7 +196,6 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                                 }, ${(app.accentColor || "#3b82f6") + "80"})`,
                             },
                         }}>
-
                         <Box
                             sx={{
                                 width: 100,
@@ -604,33 +629,49 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                         </Box>
                     </Box>
 
-                    <Button
-                        fullWidth
-                        size='large'
-                        variant='contained'
-                        startIcon={<DownloadIcon />}
-                        sx={{
-                            borderRadius: 3,
-                            py: 1.8,
-                            textTransform: "none",
-                            fontWeight: 700,
-                            fontSize: 18,
-                            background:
-                                "linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%)",
-                            backgroundSize: "200% 200%",
-                            boxShadow: "0 20px 45px rgba(37,99,235,0.5)",
-                            animation: `${pulseInstall} 3s ease-in-out infinite, ${shimmer} 3s ease-in-out infinite`,
-                            transition: "all 0.3s ease",
-                            "&:hover": {
+                    <Stack
+                        direction={{ xs: "column", sm: "row" }}
+                        spacing={1.5}
+                        sx={{ mb: 1 }}>
+                        <Button
+                            fullWidth
+                            size='large'
+                            variant='contained'
+                            startIcon={<DownloadIcon />}
+                            sx={{
+                                borderRadius: 3,
+                                py: 1.8,
+                                textTransform: "none",
+                                fontWeight: 700,
+                                fontSize: 18,
                                 background:
-                                    "linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #6d28d9 100%)",
-                                backgroundSize: "200% 200%",
-                                boxShadow: "0 25px 55px rgba(37,99,235,0.7)",
-                                transform: "translateY(-2px)",
-                            },
-                        }}>
-                        Установить
-                    </Button>
+                                    "linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%)",
+                                boxShadow: "0 20px 45px rgba(37,99,235,0.5)",
+                                "&:hover": {
+                                    boxShadow: "0 25px 55px rgba(37,99,235,0.7)",
+                                },
+                            }}>
+                            Установить
+                        </Button>
+
+                        <Button
+                            variant='outlined'
+                            size='large'
+                            startIcon={<ShareIcon />}
+                            onClick={handleShare}
+                            sx={{
+                                minWidth: { xs: "100%", sm: 170 },
+                                borderRadius: 3,
+                                textTransform: "none",
+                                fontWeight: 600,
+                                borderWidth: 2,
+                                "&:hover": {
+                                    borderWidth: 2,
+                                },
+                            }}>
+                            Поделиться
+                        </Button>
+                    </Stack>
                 </Box>
             </Box>
         </PageWrapper>

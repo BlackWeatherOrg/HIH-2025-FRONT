@@ -5,7 +5,7 @@ import AppDetail from "pages/AppDetail";
 import CategoriesScreen from "pages/CategoriesScreen";
 import MainScreen from "pages/MainScreen";
 import Onboarding from "components/Onboarding";
-import CategoryModal from "components/CategoryModal"; 
+import CategoryModal from "components/CategoryModal";
 import theme from "components/theme";
 import { fetchCategories } from "http";
 import { fetchApplications } from "http";
@@ -25,7 +25,7 @@ function App() {
     const [apps, setApps] = useState([]);
     const [categories, setCategories] = useState([]);
 
-    const [filteredApps, setFilteredApps] = useState([]); 
+    const [filteredApps, setFilteredApps] = useState([]);
     const [isBaseLoading, setIsBaseLoading] = useState(true);
     const [isSearchLoading, setIsSearchLoading] = useState(false);
 
@@ -42,6 +42,17 @@ function App() {
 
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("popularity");
+
+    const setUrlAppId = appId => {
+        const url = new URL(window.location.href);
+
+        if (appId != null) {
+            url.searchParams.set("appId", appId);
+        } else {
+            url.searchParams.delete("appId");
+        }
+        window.history.replaceState({}, "", url);
+    };
 
     const debouncedSearch = useDebouncedValue(searchQuery, 400);
 
@@ -71,9 +82,20 @@ function App() {
 
                 setApps(appsFromApi);
                 setCategories(categoriesFromApi);
-                setFilteredApps(appsFromApi); 
+                setFilteredApps(appsFromApi);
                 const today = getTodayStr();
                 let recApp = null;
+
+                const params = new URLSearchParams(window.location.search);
+                const appIdFromUrl = params.get("appId");
+
+                if (appIdFromUrl) {
+                    const found = appsFromApi.find(a => String(a.id) === String(appIdFromUrl));
+                    if (found) {
+                        setSelectedApp(found);
+                        setScreen("detail");
+                    }
+                }
 
                 try {
                     const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.dailyRec));
@@ -154,11 +176,20 @@ function App() {
     const handleOpenApp = app => {
         setSelectedApp(app);
         setScreen("detail");
+        setUrlAppId(app.id);
 
         setRecentViewIds(prev => {
             const filtered = prev.filter(id => id !== app.id);
             return [app.id, ...filtered].slice(0, 20);
         });
+        window.scrollTo({ top: 0, behavior: "auto" });
+    };
+
+    const goHome = () => {
+        setScreen("home");
+        setSelectedApp(null);
+        setUrlAppId(null);
+        window.scrollTo({ top: 0, behavior: "auto" });
     };
 
     const handleOpenGallery = (startIndex = 0) => {
@@ -181,10 +212,13 @@ function App() {
     };
 
     const recentlyViewedApps = useMemo(
-        () => recentViewIds.map(id => apps.find(a => a.id === id)).filter(Boolean),
+        () =>
+            recentViewIds
+                .map(id => apps.find(a => a.id === id))
+                .filter(Boolean)
+                .slice(0, 6),
         [recentViewIds, apps]
     );
-
     const viewsByCategory = useMemo(() => {
         const map = {};
         recentViewIds.forEach(id => {
@@ -195,34 +229,95 @@ function App() {
         return map;
     }, [recentViewIds, apps]);
 
+    const viewsByApp = useMemo(() => {
+        const map = {};
+        recentViewIds.forEach(id => {
+            map[id] = (map[id] || 0) + 1;
+        });
+        return map;
+    }, [recentViewIds]);
+
     const uniqueViewedCount = useMemo(() => new Set(recentViewIds).size, [recentViewIds]);
 
     const recommendedApps = useMemo(() => {
-        if (recentViewIds.length === 0 || apps.length === 0) return [];
-
-        let topCategory = null;
-        let maxCount = 0;
-        Object.entries(viewsByCategory).forEach(([cat, count]) => {
-            if (count > maxCount) {
-                maxCount = count;
-                topCategory = cat;
-            }
-        });
-
-        if (!topCategory) return [];
+        if (!apps || apps.length === 0) return [];
 
         const viewedSet = new Set(recentViewIds);
-        const candidates = apps.filter(a => a.category === topCategory && !viewedSet.has(a.id));
+        const hasHistory = recentViewIds.length > 0;
 
-        if (candidates.length === 0) {
-            return apps
-                .filter(a => a.category === topCategory)
-                .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
-                .slice(0, 3);
+        if (!hasHistory) {
+            return [...apps]
+                .sort((a, b) => {
+                    const ratingA = a.rating || 0;
+                    const ratingB = b.rating || 0;
+                    const popA = a.popularity || 0;
+                    const popB = b.popularity || 0;
+                    return ratingB - ratingA || popB - popA;
+                })
+                .slice(0, 6);
         }
 
-        return candidates.slice(0, 3);
-    }, [viewsByCategory, recentViewIds, apps]);
+        const maxCatViews = Object.values(viewsByCategory).reduce((m, v) => Math.max(m, v), 0) || 1;
+        const maxPopularity = apps.reduce((m, a) => Math.max(m, a.popularity || 0), 0) || 1;
+
+        const now = new Date();
+        const lastViewedIds = recentViewIds.slice(0, 3);
+
+        const scored = apps
+            .filter(app => !viewedSet.has(app.id))
+            .map(app => {
+                const catViews = viewsByCategory[app.category] || 0;
+
+                const categoryInterest = catViews / maxCatViews;
+                const popularityScore = (app.popularity || 0) / maxPopularity;
+                const ratingScore = (app.rating || 0) / 5;
+
+                let score = 0.45 * categoryInterest + 0.2 * popularityScore + 0.25 * ratingScore;
+
+                if (app.editorsChoice) {
+                    score += 0.15;
+                }
+
+                if (app.createdAt) {
+                    const created = new Date(app.createdAt);
+                    const diffDays = (now - created) / (1000 * 60 * 60 * 24);
+                    if (diffDays <= 60) {
+                        score += 0.1;
+                    }
+                }
+
+                const viewsOfApp = viewsByApp[app.id] || 0;
+                if (viewsOfApp > 0) {
+                    score -= Math.min(0.15, 0.05 * viewsOfApp);
+                }
+
+                const lastViewedApp = apps.find(a => a.id === recentViewIds[0]);
+                if (lastViewedApp && lastViewedApp.category === app.category) {
+                    score += 0.05;
+                }
+
+                if (lastViewedIds.includes(app.id)) {
+                    score -= 0.1;
+                }
+
+                return { app, score };
+            });
+
+        scored.sort((a, b) => b.score - a.score);
+
+        const result = [];
+        const categoryCounts = {};
+
+        for (const { app, score } of scored) {
+            if (result.length >= 6) break;
+            const cat = app.category || "unknown";
+            if ((categoryCounts[cat] || 0) >= 3) continue;
+            categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+            result.push(app);
+        }
+
+        return result;
+    }, [apps, viewsByCategory, viewsByApp, recentViewIds]);
 
     const achievements = useMemo(() => {
         const financeViews = viewsByCategory["Финансы"] || 0;
@@ -260,9 +355,9 @@ function App() {
 
             {screen === "home" && (
                 <MainScreen
-                    apps={apps} 
-                    list={filteredApps} 
-                    categories={categories} 
+                    apps={apps}
+                    list={filteredApps}
+                    categories={categories}
                     selectedCategory={selectedCategory}
                     onSelectCategory={setSelectedCategory}
                     onOpenCategories={() => setScreen("categories")}
@@ -282,7 +377,7 @@ function App() {
             {screen === "categories" && (
                 <CategoriesScreen
                     categories={categories}
-                    onBack={() => setScreen("home")}
+                    onBack={goHome}
                     onSelectCategory={handleOpenCategory}
                     apps={apps}
                     viewsByCategory={viewsByCategory}
@@ -293,7 +388,7 @@ function App() {
                 <>
                     <AppDetail
                         app={selectedApp}
-                        onBack={() => setScreen("home")}
+                        onBack={goHome} 
                         onOpenGallery={handleOpenGallery}
                     />
                     <ScreenshotGallery

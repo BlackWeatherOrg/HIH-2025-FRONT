@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Stack, Fab } from "@mui/material";
 import { keyframes } from "@emotion/react";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import SearchIcon from "@mui/icons-material/Search";
 
 import PageWrapper from "components/PageWrapper";
 import MainAppBar from "components/mainscreen/Mainbar";
@@ -11,6 +12,7 @@ import AppsSliderBlock from "components/mainscreen/AppsSliderBlock";
 import SearchAndSortBar from "components/mainscreen/SearchAndSortBar";
 import CategoriesChipsRow from "components/mainscreen/CategoriesChipsRow";
 import AllAppsSection from "components/mainscreen/AllAppsSection";
+
 const fadeUp = keyframes`
   from { 
     opacity: 0; 
@@ -23,9 +25,9 @@ const fadeUp = keyframes`
 `;
 
 const MainScreen = ({
-    apps, 
-    list, 
-    categories, 
+    apps,
+    list,
+    categories,
     selectedCategory,
     onSelectCategory,
     onOpenCategories,
@@ -40,6 +42,8 @@ const MainScreen = ({
     dailyRecommendation,
     achievements,
 }) => {
+    const searchRef = React.useRef(null);
+
     let listToShow = Array.isArray(list) ? [...list] : [];
     listToShow.sort((a, b) => {
         if (sortBy === "popularity") {
@@ -72,10 +76,12 @@ const MainScreen = ({
     const editorsChoice = apps.filter(a => a.editorsChoice).slice(0, 8);
 
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [showSearchJump] = useState(true); 
 
     useEffect(() => {
         const handleScroll = () => {
-            setShowScrollTop(window.scrollY > 400);
+            const y = window.scrollY;
+            setShowScrollTop(y > 400);
         };
         window.addEventListener("scroll", handleScroll);
         handleScroll();
@@ -84,6 +90,18 @@ const MainScreen = ({
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const scrollToSearch = () => {
+        if (searchRef.current) {
+            const rect = searchRef.current.getBoundingClientRect();
+            const absoluteY = rect.top + window.scrollY;
+            const OFFSET = 80; 
+            window.scrollTo({
+                top: absoluteY - OFFSET,
+                behavior: "smooth",
+            });
+        }
     };
 
     return (
@@ -110,7 +128,7 @@ const MainScreen = ({
                     <Box
                         sx={{
                             animation: `${fadeUp} 0.6s ease-out 0.3s both`,
-                            mb: 2.5, 
+                            mb: 2.5,
                         }}>
                         <AppsSliderBlock
                             title='Вы недавно смотрели'
@@ -180,7 +198,9 @@ const MainScreen = ({
                     )}
                 </Stack>
 
-                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.8s both`, mb: 1.5 }}>
+                <Box
+                    ref={searchRef}
+                    sx={{ animation: `${fadeUp} 0.6s ease-out 0.8s both`, mb: 1.5 }}>
                     <SearchAndSortBar
                         searchQuery={searchQuery}
                         onSearchChange={onSearchChange}
@@ -203,6 +223,22 @@ const MainScreen = ({
                     />
                 </Box>
             </Box>
+
+            {showSearchJump && (
+                <Fab
+                    color='primary'
+                    size='medium'
+                    onClick={scrollToSearch}
+                    sx={{
+                        position: "fixed",
+                        bottom: 88, 
+                        right: 24,
+                        zIndex: 1300,
+                        boxShadow: "0 10px 30px rgba(15,23,42,0.3)",
+                    }}>
+                    <SearchIcon />
+                </Fab>
+            )}
 
             {showScrollTop && (
                 <Fab

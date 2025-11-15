@@ -14,7 +14,6 @@ import {
     useTheme,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import CategoryIcon from "@mui/icons-material/Category";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import StarIcon from "@mui/icons-material/Star";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
@@ -40,7 +39,7 @@ const pulseAnimation = keyframes`
 
 const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByCategory }) => {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const totalApps = apps.length;
     const totalViews = Object.values(viewsByCategory || {}).reduce((acc, v) => acc + v, 0);
@@ -86,15 +85,14 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
         }
     };
 
-    const getCategoryIcon = (cat) => {
+    const getCategoryIcon = cat => {
         const { emoji } = getCategoryColors(cat);
         return (
             <Box
                 sx={{
                     fontSize: isMobile ? "18px" : "20px",
                     animation: `${floatAnimation} 3s ease-in-out infinite`,
-                }}
-            >
+                }}>
                 {emoji}
             </Box>
         );
@@ -117,26 +115,25 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
     };
 
     const renderTopAppPreview = app => {
-        if (!app) return (
-            <Box
-                sx={{
-                    width: isMobile ? "100%" : 160,
-                    p: isMobile ? 1 : 1.5,
-                    borderRadius: 2,
-                    bgcolor: "rgba(248,250,252,0.8)",
-                    border: "1px dashed rgba(148,163,184,0.4)",
-                    textAlign: "center",
-                }}
-            >
-                <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ fontSize: isMobile ? "0.7rem" : "0.75rem" }}
-                >
-                    Нет данных
-                </Typography>
-            </Box>
-        );
+        if (!app)
+            return (
+                <Box
+                    sx={{
+                        width: isMobile ? "100%" : 160,
+                        p: isMobile ? 1 : 1.5,
+                        borderRadius: 2,
+                        bgcolor: "rgba(248,250,252,0.8)",
+                        border: "1px dashed rgba(148,163,184,0.4)",
+                        textAlign: "center",
+                    }}>
+                    <Typography
+                        variant='caption'
+                        color='text.secondary'
+                        sx={{ fontSize: isMobile ? "0.7rem" : "0.75rem" }}>
+                        Нет данных
+                    </Typography>
+                </Box>
+            );
 
         return (
             <Stack
@@ -156,46 +153,48 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                     },
                 }}>
                 <Avatar
+                    src={app.icon_link || undefined}
+                    alt={app.name}
                     sx={{
                         width: isMobile ? 28 : 32,
                         height: isMobile ? 28 : 32,
                         fontSize: isMobile ? 14 : 16,
                         fontWeight: 600,
-                        bgcolor: app.accentColor || "#2563eb",
+                        bgcolor: app.icon_link ? "#f9fafb" : "#2563eb",
+                        border: "1px solid #e5e7eb",
                         animation: `${pulseAnimation} 2s ease-in-out infinite`,
                     }}>
-                    {app.name[0]}
+                    {app.name?.[0] || "A"}
                 </Avatar>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography
                         variant='body2'
                         fontWeight={600}
                         noWrap
-                        sx={{ 
+                        sx={{
                             fontSize: isMobile ? "0.75rem" : "0.8rem",
-                            lineHeight: 1.2
-                        }}
-                    >
+                            lineHeight: 1.2,
+                        }}>
                         {app.name}
                     </Typography>
                     <Stack
                         direction='row'
                         spacing={0.5}
                         alignItems='center'
-                        sx={{ mt: 0.25 }}
-                    >
-                        <StarIcon sx={{ 
-                            fontSize: isMobile ? 10 : 12, 
-                            color: "#f59e0b" 
-                        }} />
+                        sx={{ mt: 0.25 }}>
+                        <StarIcon
+                            sx={{
+                                fontSize: isMobile ? 10 : 12,
+                                color: "#f59e0b",
+                            }}
+                        />
                         <Typography
                             variant='caption'
                             color='text.secondary'
-                            sx={{ 
+                            sx={{
                                 fontSize: isMobile ? "0.65rem" : "0.7rem",
-                                lineHeight: 1.2
-                            }}
-                        >
+                                lineHeight: 1.2,
+                            }}>
                             {app.rating?.toFixed(1) || "—"}
                         </Typography>
                     </Stack>
@@ -204,16 +203,16 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
         );
     };
 
-    const getAchievementLevel = (percent) => {
+    const getAchievementLevel = percent => {
         if (percent >= 80) return { text: "Эксперт", color: "#f59e0b", icon: "🏆" };
         if (percent >= 50) return { text: "Продвинутый", color: "#8b5cf6", icon: "⭐" };
         if (percent >= 25) return { text: "Новичок", color: "#16a34a", icon: "🌱" };
         return { text: "Начинающий", color: "#6b7280", icon: "🔍" };
     };
 
-    const handleCategorySelect = (cat) => {
+    const handleCategorySelect = cat => {
         if (cat === "Все") {
-            onBack(); 
+            onBack();
         } else {
             onSelectCategory(cat);
         }
@@ -236,25 +235,24 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                         color='inherit'
                         onClick={onBack}
                         sx={{
-                            '&:hover': {
-                                bgcolor: 'rgba(37, 99, 235, 0.1)',
-                                transform: 'scale(1.1)',
+                            "&:hover": {
+                                bgcolor: "rgba(37, 99, 235, 0.1)",
+                                transform: "scale(1.1)",
                             },
-                            transition: 'all 0.2s ease'
-                        }}
-                    >
+                            transition: "all 0.2s ease",
+                        }}>
                         <ArrowBackIcon />
                     </IconButton>
 
                     <Typography
                         variant={isMobile ? "subtitle1" : "h6"}
-                        sx={{ 
-                            fontWeight: 700, 
-                            background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)', 
-                            backgroundClip: 'text', 
-                            WebkitBackgroundClip: 'text', 
-                            color: 'transparent',
-                            fontSize: isMobile ? '1.1rem' : '1.25rem'
+                        sx={{
+                            fontWeight: 700,
+                            background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
+                            backgroundClip: "text",
+                            WebkitBackgroundClip: "text",
+                            color: "transparent",
+                            fontSize: isMobile ? "1.1rem" : "1.25rem",
                         }}>
                         Категории приложений
                     </Typography>
@@ -267,129 +265,132 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                     animation: `${fadeUp} 0.3s ease-out`,
                     px: isMobile ? 1.5 : 0,
                 }}>
-
                 <Paper
                     elevation={0}
                     sx={{
                         mb: 3,
-                        p: isMobile ? 2 : 3, 
+                        p: isMobile ? 2 : 3,
                         borderRadius: isMobile ? 3 : 4,
-                        background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)',
+                        background: "linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)",
                         border: "1px solid #e0f2fe",
-                        position: 'relative',
-                        overflow: 'hidden',
-                        '&::before': {
+                        position: "relative",
+                        overflow: "hidden",
+                        "&::before": {
                             content: '""',
-                            position: 'absolute',
-                            top: isMobile ? -40 : -60, 
-                            right: isMobile ? -40 : -60, 
-                            width: isMobile ? 80 : 120, 
-                            height: isMobile ? 80 : 120, 
-                            borderRadius: '50%',
-                            background: 'radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%)',
-                        }
+                            position: "absolute",
+                            top: isMobile ? -40 : -60,
+                            right: isMobile ? -40 : -60,
+                            width: isMobile ? 80 : 120,
+                            height: isMobile ? 80 : 120,
+                            borderRadius: "50%",
+                            background:
+                                "radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%)",
+                        },
                     }}>
                     <Stack
                         direction={{ xs: "column", sm: "row" }}
-                        spacing={isMobile ? 2 : 3} 
+                        spacing={isMobile ? 2 : 3}
                         alignItems={{ xs: "flex-start", sm: "center" }}>
-                        <Box sx={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                        <Box sx={{ flex: 1, position: "relative", zIndex: 1 }}>
                             <Stack
                                 direction='row'
-                                spacing={isMobile ? 1.5 : 2} 
+                                spacing={isMobile ? 1.5 : 2}
                                 alignItems='center'
-                                mb={isMobile ? 1.5 : 2} 
-                            >
+                                mb={isMobile ? 1.5 : 2}>
                                 <Box
                                     sx={{
-                                        p: isMobile ? 1 : 1.5, 
+                                        p: isMobile ? 1 : 1.5,
                                         borderRadius: 3,
-                                        bgcolor: 'white',
-                                        boxShadow: '0 4px 12px rgba(37, 99, 235, 0.15)',
+                                        bgcolor: "white",
+                                        boxShadow: "0 4px 12px rgba(37, 99, 235, 0.15)",
                                         animation: `${pulseAnimation} 2s ease-in-out infinite`,
                                         flexShrink: 0,
-                                    }}
-                                >
-                                    <TrendingUpIcon sx={{ 
-                                        color: "#2563eb", 
-                                        fontSize: isMobile ? 24 : 28 
-                                    }} /> 
+                                    }}>
+                                    <TrendingUpIcon
+                                        sx={{
+                                            color: "#2563eb",
+                                            fontSize: isMobile ? 24 : 28,
+                                        }}
+                                    />
                                 </Box>
                                 <Box sx={{ flex: 1, minWidth: 0 }}>
                                     <Typography
-                                        variant={isMobile ? "subtitle1" : "h6"} 
+                                        variant={isMobile ? "subtitle1" : "h6"}
                                         fontWeight={700}
-                                        sx={{ 
-                                            color: '#1e293b', 
+                                        sx={{
+                                            color: "#1e293b",
                                             mb: 1,
-                                            fontSize: isMobile ? '1rem' : '1.25rem'
-                                        }} 
-                                    >
+                                            fontSize: isMobile ? "1rem" : "1.25rem",
+                                        }}>
                                         Ваш прогресс по категориям
                                     </Typography>
                                     <Typography
-                                        variant='body2' 
+                                        variant='body2'
                                         color='text.secondary'
-                                        sx={{ 
-                                            maxWidth: 500, 
+                                        sx={{
+                                            maxWidth: 500,
                                             lineHeight: 1.5,
-                                            fontSize: isMobile ? '0.85rem' : '1rem'
-                                        }} 
-                                    >
-                                        Вы изучили {viewedApprox} из {totalApps} приложений. 
+                                            fontSize: isMobile ? "0.85rem" : "1rem",
+                                        }}>
+                                        Вы изучили {viewedApprox} из {totalApps} приложений.
                                         Продолжайте открывать новые приложения!
                                     </Typography>
                                 </Box>
                             </Stack>
 
-                            <Box sx={{ 
-                                minWidth: isMobile ? 160 : 200, 
-                                mt: isMobile ? 2 : 3 
-                            }}> 
+                            <Box
+                                sx={{
+                                    minWidth: isMobile ? 160 : 200,
+                                    mt: isMobile ? 2 : 3,
+                                }}>
                                 <LinearProgress
                                     variant='determinate'
                                     value={overallPercent}
                                     sx={{
-                                        height: isMobile ? 10 : 12, 
+                                        height: isMobile ? 10 : 12,
                                         borderRadius: 999,
                                         bgcolor: "rgba(255,255,255,0.8)",
-                                        border: '1px solid #e5e7eb',
-                                        '& .MuiLinearProgress-bar': {
+                                        border: "1px solid #e5e7eb",
+                                        "& .MuiLinearProgress-bar": {
                                             bgcolor: "#2563eb",
                                             borderRadius: 999,
-                                            background: 'linear-gradient(90deg, #2563eb 0%, #7c3aed 100%)',
+                                            background:
+                                                "linear-gradient(90deg, #2563eb 0%, #7c3aed 100%)",
                                         },
                                     }}
                                 />
-                                <Stack 
-                                    direction="row" 
-                                    justifyContent="space-between" 
-                                    alignItems="center" 
+                                <Stack
+                                    direction='row'
+                                    justifyContent='space-between'
+                                    alignItems='center'
                                     mt={1.5}
-                                    sx={{ flexWrap: isMobile ? 'wrap' : 'nowrap' }}
-                                >
+                                    sx={{ flexWrap: isMobile ? "wrap" : "nowrap" }}>
                                     <Typography
-                                        variant='body2' 
+                                        variant='body2'
                                         fontWeight={600}
                                         color='text.primary'
                                         sx={{
-                                            fontSize: isMobile ? '0.8rem' : '0.875rem',
-                                            mb: isMobile ? 0.5 : 0
-                                        }}
-                                    >
+                                            fontSize: isMobile ? "0.8rem" : "0.875rem",
+                                            mb: isMobile ? 0.5 : 0,
+                                        }}>
                                         Общий прогресс: {Math.round(overallPercent)}%
                                     </Typography>
                                     <Chip
-                                        size={isMobile ? "small" : "medium"} 
+                                        size={isMobile ? "small" : "medium"}
                                         label={getAchievementLevel(overallPercent).text}
-                                        icon={<span style={{ 
-                                            fontSize: isMobile ? '12px' : '14px' 
-                                        }}>{getAchievementLevel(overallPercent).icon}</span>}
+                                        icon={
+                                            <span
+                                                style={{
+                                                    fontSize: isMobile ? "12px" : "14px",
+                                                }}>
+                                                {getAchievementLevel(overallPercent).icon}
+                                            </span>
+                                        }
                                         sx={{
                                             bgcolor: getAchievementLevel(overallPercent).color,
-                                            color: 'white',
-                                            fontSize: isMobile ? '0.7rem' : '0.8rem', 
-                                            height: isMobile ? 20 : 24, 
+                                            color: "white",
+                                            fontSize: isMobile ? "0.7rem" : "0.8rem",
+                                            height: isMobile ? 20 : 24,
                                             fontWeight: 600,
                                         }}
                                     />
@@ -399,46 +400,65 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                     </Stack>
 
                     {topCategories.length > 0 && (
-                        <Box mt={isMobile ? 2 : 3} position="relative" zIndex={1}> 
-                            <Stack direction="row" spacing={1} alignItems="center" mb={1}> 
-                                <EmojiEventsIcon sx={{ 
-                                    color: "#f59e0b", 
-                                    fontSize: isMobile ? 16 : 20 
-                                }} />
+                        <Box
+                            mt={isMobile ? 2 : 3}
+                            position='relative'
+                            zIndex={1}>
+                            <Stack
+                                direction='row'
+                                spacing={1}
+                                alignItems='center'
+                                mb={1}>
+                                <EmojiEventsIcon
+                                    sx={{
+                                        color: "#f59e0b",
+                                        fontSize: isMobile ? 16 : 20,
+                                    }}
+                                />
                                 <Typography
-                                    variant='body2' 
+                                    variant='body2'
                                     fontWeight={600}
                                     color='text.primary'
-                                    sx={{ fontSize: isMobile ? '0.8rem' : '0.875rem' }}
-                                >
+                                    sx={{ fontSize: isMobile ? "0.8rem" : "0.875rem" }}>
                                     Ваши топ-категории:
                                 </Typography>
                             </Stack>
                             <Stack
                                 direction='row'
-                                spacing={1} 
+                                spacing={1}
                                 flexWrap='wrap'>
                                 {topCategories.map((cat, index) => (
                                     <Chip
                                         key={cat}
-                                        size={isMobile ? "small" : "medium"} 
+                                        size={isMobile ? "small" : "medium"}
                                         label={cat}
-                                        icon={<span style={{ 
-                                            fontSize: isMobile ? '12px' : '14px' 
-                                        }}>{index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}</span>}
+                                        icon={
+                                            <span
+                                                style={{
+                                                    fontSize: isMobile ? "12px" : "14px",
+                                                }}>
+                                                {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                                            </span>
+                                        }
                                         sx={{
                                             borderRadius: 2,
                                             bgcolor: "white",
-                                            border: `2px solid ${index === 0 ? "#f59e0b" : index === 1 ? "#94a3b8" : "#f97316"}`,
-                                            fontSize: isMobile ? '0.7rem' : '0.8rem', 
+                                            border: `2px solid ${
+                                                index === 0
+                                                    ? "#f59e0b"
+                                                    : index === 1
+                                                    ? "#94a3b8"
+                                                    : "#f97316"
+                                            }`,
+                                            fontSize: isMobile ? "0.7rem" : "0.8rem",
                                             fontWeight: 600,
-                                            height: isMobile ? 28 : 32, 
+                                            height: isMobile ? 28 : 32,
                                             mb: 0.5,
-                                            '&:hover': {
-                                                transform: 'translateY(-1px)',
-                                                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                            "&:hover": {
+                                                transform: "translateY(-1px)",
+                                                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
                                             },
-                                            transition: 'all 0.2s ease',
+                                            transition: "all 0.2s ease",
                                         }}
                                     />
                                 ))}
@@ -472,24 +492,27 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                                         borderColor: dot,
                                         transform: "translateY(-3px)",
                                     },
-                                    position: 'relative',
-                                    overflow: 'hidden',
+                                    position: "relative",
+                                    overflow: "hidden",
                                 }}>
                                 <Box
                                     sx={{
-                                        position: 'absolute',
+                                        position: "absolute",
                                         top: 0,
                                         right: 0,
                                         width: isMobile ? 60 : 80,
                                         height: isMobile ? 60 : 80,
                                         bgcolor: `${dot}10`,
-                                        borderRadius: '0 0 0 80px',
+                                        borderRadius: "0 0 0 80px",
                                     }}
                                 />
-                                
+
                                 {isMobile ? (
                                     <Stack spacing={1.5}>
-                                        <Stack direction="row" spacing={1.5} alignItems="center">
+                                        <Stack
+                                            direction='row'
+                                            spacing={1.5}
+                                            alignItems='center'>
                                             <Box
                                                 sx={{
                                                     width: 44,
@@ -506,25 +529,27 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                                                 {getCategoryIcon(cat)}
                                             </Box>
                                             <Box sx={{ flex: 1, minWidth: 0 }}>
-                                                <Stack direction="row" spacing={1} alignItems="center">
+                                                <Stack
+                                                    direction='row'
+                                                    spacing={1}
+                                                    alignItems='center'>
                                                     <Typography
-                                                        variant="body1"
+                                                        variant='body1'
                                                         fontWeight={700}
                                                         noWrap
-                                                        sx={{ 
-                                                            color: '#1e293b',
-                                                            fontSize: '0.95rem'
-                                                        }}
-                                                    >
+                                                        sx={{
+                                                            color: "#1e293b",
+                                                            fontSize: "0.95rem",
+                                                        }}>
                                                         {cat === "Все" ? "Все приложения" : cat}
                                                     </Typography>
                                                     <Chip
                                                         label={achievement.text}
-                                                        size="small"
+                                                        size='small'
                                                         sx={{
                                                             bgcolor: achievement.color,
-                                                            color: 'white',
-                                                            fontSize: '0.55rem',
+                                                            color: "white",
+                                                            fontSize: "0.55rem",
                                                             height: 16,
                                                             fontWeight: 600,
                                                         }}
@@ -541,66 +566,67 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                                                     height: 6,
                                                     borderRadius: 999,
                                                     bgcolor: "#f1f5f9",
-                                                    border: '1px solid #e5e7eb',
-                                                    '& .MuiLinearProgress-bar': {
+                                                    border: "1px solid #e5e7eb",
+                                                    "& .MuiLinearProgress-bar": {
                                                         bgcolor: dot,
                                                         borderRadius: 999,
                                                         background: `linear-gradient(90deg, ${dot} 0%, ${dot}99 100%)`,
                                                     },
                                                 }}
                                             />
-                                            <Stack direction="row" justifyContent="space-between" alignItems="center" mt={0.5}>
+                                            <Stack
+                                                direction='row'
+                                                justifyContent='space-between'
+                                                alignItems='center'
+                                                mt={0.5}>
                                                 <Typography
                                                     variant='caption'
                                                     color='text.secondary'
-                                                    sx={{ fontSize: 11 }}
-                                                >
+                                                    sx={{ fontSize: 11 }}>
                                                     Изучено {stats.viewed} из {stats.total || 0}
                                                 </Typography>
                                                 <Typography
                                                     variant='caption'
                                                     fontWeight={600}
                                                     color={dot}
-                                                    sx={{ fontSize: 11 }}
-                                                >
+                                                    sx={{ fontSize: 11 }}>
                                                     {Math.round(stats.percent)}%
                                                 </Typography>
                                             </Stack>
                                         </Box>
 
-                                        <Stack 
-                                            direction="row" 
-                                            spacing={1} 
-                                            alignItems="center" 
-                                            justifyContent="space-between"
-                                            sx={{ 
-                                                borderTop: '1px solid #f1f5f9',
+                                        <Stack
+                                            direction='row'
+                                            spacing={1}
+                                            alignItems='center'
+                                            justifyContent='space-between'
+                                            sx={{
+                                                borderTop: "1px solid #f1f5f9",
                                                 pt: 1,
-                                                mt: 0.5
-                                            }}
-                                        >
+                                                mt: 0.5,
+                                            }}>
                                             <Box sx={{ flex: 1 }}>
                                                 {renderTopAppPreview(topApp)}
                                             </Box>
-                                            <ChevronRightIcon 
-                                                sx={{ 
+                                            <ChevronRightIcon
+                                                sx={{
                                                     color: "#9ca3af",
-                                                    transition: 'transform 0.2s ease',
+                                                    transition: "transform 0.2s ease",
                                                     fontSize: 20,
                                                     flexShrink: 0,
-                                                    '.MuiPaper:hover &': {
-                                                        transform: 'translateX(3px)',
+                                                    ".MuiPaper:hover &": {
+                                                        transform: "translateX(3px)",
                                                         color: dot,
-                                                    }
-                                                }} 
+                                                    },
+                                                }}
                                             />
                                         </Stack>
                                     </Stack>
                                 ) : (
                                     <Stack
-                                        direction="row"
+                                        direction='row'
                                         spacing={2}
-                                        alignItems="center">
+                                        alignItems='center'>
                                         <Stack
                                             direction='row'
                                             spacing={1.5}
@@ -622,33 +648,35 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                                             </Box>
 
                                             <Box sx={{ minWidth: 0, flex: 1 }}>
-                                                <Stack direction="row" spacing={1} alignItems="center" mb={0.5}>
+                                                <Stack
+                                                    direction='row'
+                                                    spacing={1}
+                                                    alignItems='center'
+                                                    mb={0.5}>
                                                     <Typography
                                                         variant='subtitle1'
                                                         fontWeight={700}
                                                         noWrap
-                                                        sx={{ color: '#1e293b' }}
-                                                    >
+                                                        sx={{ color: "#1e293b" }}>
                                                         {cat === "Все" ? "Все приложения" : cat}
                                                     </Typography>
                                                     <Chip
                                                         label={achievement.text}
-                                                        size="small"
+                                                        size='small'
                                                         sx={{
                                                             bgcolor: achievement.color,
-                                                            color: 'white',
-                                                            fontSize: '0.6rem',
+                                                            color: "white",
+                                                            fontSize: "0.6rem",
                                                             height: 18,
                                                             fontWeight: 600,
                                                         }}
                                                     />
                                                 </Stack>
-                                                
+
                                                 <Typography
                                                     variant='body2'
                                                     color='text.secondary'
-                                                    sx={{ fontSize: 12, mb: 1.5 }}
-                                                >
+                                                    sx={{ fontSize: 12, mb: 1.5 }}>
                                                     {cat === "Все"
                                                         ? `Всего в витрине: ${stats.total}`
                                                         : `Приложений в категории: ${stats.total}`}
@@ -662,26 +690,29 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                                                             height: 8,
                                                             borderRadius: 999,
                                                             bgcolor: "#f1f5f9",
-                                                            border: '1px solid #e5e7eb',
-                                                            '& .MuiLinearProgress-bar': {
+                                                            border: "1px solid #e5e7eb",
+                                                            "& .MuiLinearProgress-bar": {
                                                                 bgcolor: dot,
                                                                 borderRadius: 999,
                                                                 background: `linear-gradient(90deg, ${dot} 0%, ${dot}99 100%)`,
                                                             },
                                                         }}
                                                     />
-                                                    <Stack direction="row" justifyContent="space-between" alignItems="center" mt={0.5}>
+                                                    <Stack
+                                                        direction='row'
+                                                        justifyContent='space-between'
+                                                        alignItems='center'
+                                                        mt={0.5}>
                                                         <Typography
                                                             variant='caption'
-                                                            color='text.secondary'
-                                                        >
-                                                            Изучено {stats.viewed} из {stats.total || 0}
+                                                            color='text.secondary'>
+                                                            Изучено {stats.viewed} из{" "}
+                                                            {stats.total || 0}
                                                         </Typography>
                                                         <Typography
                                                             variant='caption'
                                                             fontWeight={600}
-                                                            color={dot}
-                                                        >
+                                                            color={dot}>
                                                             {Math.round(stats.percent)}%
                                                         </Typography>
                                                     </Stack>
@@ -693,18 +724,17 @@ const CategoriesScreen = ({ categories, onBack, onSelectCategory, apps, viewsByC
                                             direction='row'
                                             spacing={1.5}
                                             alignItems='center'
-                                            sx={{ position: 'relative', zIndex: 1 }}
-                                        >
+                                            sx={{ position: "relative", zIndex: 1 }}>
                                             {renderTopAppPreview(topApp)}
-                                            <ChevronRightIcon 
-                                                sx={{ 
+                                            <ChevronRightIcon
+                                                sx={{
                                                     color: "#9ca3af",
-                                                    transition: 'transform 0.2s ease',
-                                                    '.MuiPaper:hover &': {
-                                                        transform: 'translateX(3px)',
+                                                    transition: "transform 0.2s ease",
+                                                    ".MuiPaper:hover &": {
+                                                        transform: "translateX(3px)",
                                                         color: dot,
-                                                    }
-                                                }} 
+                                                    },
+                                                }}
                                             />
                                         </Stack>
                                     </Stack>

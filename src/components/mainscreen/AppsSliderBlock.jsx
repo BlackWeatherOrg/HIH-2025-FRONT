@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, Stack, Typography, IconButton } from "@mui/material";
+import { Box, Stack, Typography, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import { keyframes } from "@emotion/react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -7,7 +7,6 @@ import WhatshotIcon from "@mui/icons-material/Whatshot";
 import StarIcon from "@mui/icons-material/Star";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import AppCard from "components/AppCard";
-
 const slideIn = keyframes`
   from { 
     opacity: 0; 
@@ -32,12 +31,20 @@ const AppsSliderBlock = ({
     onOpenApp,
     variant = "plain",
     autoPlay = false,
-    autoPlayInterval = 8000, 
+    autoPlayInterval = 8000,
 }) => {
-    const [index, setIndex] = useState(0);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
-    const canSlide = items.length > 3;
-    const visibleCount = Math.min(3, items.length);
+    const [index, setIndex] = useState(0);
+    const visibleCount = useMemo(() => {
+        if (items.length === 0) return 0;
+        const target = isMobile ? 1 : isTablet ? 2 : 3;
+        return Math.min(target, items.length);
+    }, [items.length, isMobile, isTablet]);
+
+    const canSlide = items.length > visibleCount;
 
     useEffect(() => {
         if (index >= items.length) {
@@ -46,7 +53,7 @@ const AppsSliderBlock = ({
     }, [items.length, index]);
 
     const visibleItems = useMemo(() => {
-        if (items.length === 0) return [];
+        if (items.length === 0 || visibleCount === 0) return [];
         const result = [];
         for (let i = 0; i < visibleCount; i += 1) {
             const idx = (index + i) % items.length;
@@ -98,7 +105,6 @@ const AppsSliderBlock = ({
                 bgcolor: isSubtle ? "#f9fafb" : "#ffffff",
                 border: "1px solid #e5e7eb",
             }}>
-
             <Stack
                 direction='row'
                 alignItems='center'
@@ -154,12 +160,9 @@ const AppsSliderBlock = ({
                 </Stack>
             </Stack>
 
-            <Box
-                sx={{
-                    overflow: "hidden",
-                }}>
+            <Box sx={{ overflow: "hidden" }}>
                 <Stack
-                    key={index} 
+                    key={index}
                     direction='row'
                     spacing={2}
                     sx={{
@@ -170,7 +173,7 @@ const AppsSliderBlock = ({
                             key={app.id}
                             sx={{
                                 flex: 1,
-                                minWidth: 0,
+                                minWidth: isMobile ? "100%" : 0,
                             }}>
                             <AppCard
                                 app={app}
