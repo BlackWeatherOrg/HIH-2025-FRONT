@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     AppBar,
     Toolbar,
@@ -15,7 +15,6 @@ import {
     Paper,
     LinearProgress,
     Divider,
-    Fab,
 } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -30,6 +29,8 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import CollectionsIcon from "@mui/icons-material/Collections";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { keyframes } from "@emotion/react";
 import PageWrapper from "../components/PageWrapper";
 
@@ -56,6 +57,9 @@ const shimmer = keyframes`
 `;
 
 const AppDetail = ({ app, onBack, onOpenGallery }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const MAX_DESCRIPTION_LENGTH = 200;
+
     const popularityLabel =
         app.popularity && app.popularity > 800
             ? "Очень популярно"
@@ -80,6 +84,11 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
         { label: "Пользователей", value: app.downloads || "1M+", icon: <PeopleIcon /> },
         { label: "Безопасность", value: "Высокая", icon: <SecurityIcon /> },
     ];
+
+    const shouldTruncate = app.description && app.description.length > MAX_DESCRIPTION_LENGTH;
+    const displayDescription = shouldTruncate && !isExpanded 
+        ? `${app.description.substring(0, MAX_DESCRIPTION_LENGTH)}...` 
+        : app.description;
 
     const handleShare = () => {
         const url = new URL(window.location.href);
@@ -471,9 +480,35 @@ const AppDetail = ({ app, onBack, onOpenGallery }) => {
                             variant='body1'
                             color='text.secondary'
                             lineHeight={1.8}
-                            sx={{ fontSize: "1.05rem" }}>
-                            {app.description}
+                            sx={{ 
+                                fontSize: "1.05rem",
+                                whiteSpace: 'pre-wrap',
+                                wordBreak: 'break-word',
+                                mb: shouldTruncate ? 2 : 0
+                            }}>
+                            {displayDescription}
                         </Typography>
+
+                        {shouldTruncate && (
+                            <Button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                variant="text"
+                                size="small"
+                                endIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                sx={{
+                                    textTransform: 'none',
+                                    fontWeight: 600,
+                                    color: '#2563eb',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(37, 99, 235, 0.04)',
+                                    },
+                                    borderRadius: 2,
+                                    px: 2,
+                                }}
+                            >
+                                {isExpanded ? 'Свернуть' : 'Читать больше'}
+                            </Button>
+                        )}
                     </Paper>
 
                     <Paper
