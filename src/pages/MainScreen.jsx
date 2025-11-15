@@ -11,8 +11,14 @@ import CategoriesChipsRow from "components/mainscreen/CategoriesChipsRow";
 import AllAppsSection from "components/mainscreen/AllAppsSection";
 
 const fadeUp = keyframes`
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 `;
 
 const MainScreen = ({
@@ -75,83 +81,102 @@ const MainScreen = ({
         <PageWrapper>
             <MainAppBar onOpenCategories={onOpenCategories} />
 
-            <Box sx={{ mt: 2, animation: `${fadeUp} 0.35s ease-out` }}>
-                <DailyRecommendationSection
-                    dailyRecommendation={dailyRecommendation}
-                    onOpenApp={onOpenApp}
-                />
+            <Box sx={{ 
+                mt: 2, 
+                animation: `${fadeUp} 0.5s ease-out` 
+            }}>
+                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.1s both` }}>
+                    <DailyRecommendationSection
+                        dailyRecommendation={dailyRecommendation}
+                        onOpenApp={onOpenApp}
+                    />
+                </Box>
 
-                <AchievementsSection achievements={achievements} />
+                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.2s both` }}>
+                    <AchievementsSection achievements={achievements} />
+                </Box>
 
                 {recentlyViewedApps && recentlyViewedApps.length > 0 && (
-                    <AppsSliderBlock
-                        title='Вы недавно смотрели'
-                        items={recentlyViewedApps}
-                        onOpenApp={onOpenApp}
-                        variant='plain'
-                    />
+                    <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.3s both` }}>
+                        <AppsSliderBlock
+                            title='Вы недавно смотрели'
+                            items={recentlyViewedApps}
+                            onOpenApp={onOpenApp}
+                            variant='plain'
+                        />
+                    </Box>
                 )}
 
                 {recommendedApps && recommendedApps.length > 0 && (
-                    <AppsSliderBlock
-                        title='Рекомендации для вас'
-                        items={recommendedApps}
-                        onOpenApp={onOpenApp}
-                        variant='subtle'
-                    />
+                    <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.4s both` }}>
+                        <AppsSliderBlock
+                            title='Рекомендации для вас'
+                            items={recommendedApps}
+                            onOpenApp={onOpenApp}
+                            variant='subtle'
+                        />
+                    </Box>
                 )}
 
-                <Stack
-                    spacing={2.5}
-                    mb={3}>
+                <Stack spacing={2.5} mb={3}>
                     {popularApps.length > 0 && (
-                        <AppsSliderBlock
-                            title='Популярные приложения'
-                            iconType='hot'
-                            items={popularApps}
-                            onOpenApp={onOpenApp}
-                            variant='plain'
-                        />
+                        <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.5s both` }}>
+                            <AppsSliderBlock
+                                title='Популярные приложения'
+                                iconType='hot'
+                                items={popularApps}
+                                onOpenApp={onOpenApp}
+                                variant='plain'
+                            />
+                        </Box>
                     )}
 
                     {newApps.length > 0 && (
-                        <AppsSliderBlock
-                            title='Новинки'
-                            iconType='new'
-                            items={newApps}
-                            onOpenApp={onOpenApp}
-                            variant='plain'
-                        />
+                        <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.6s both` }}>
+                            <AppsSliderBlock
+                                title='Новинки'
+                                iconType='new'
+                                items={newApps}
+                                onOpenApp={onOpenApp}
+                                variant='plain'
+                            />
+                        </Box>
                     )}
 
                     {editorsChoice.length > 0 && (
-                        <AppsSliderBlock
-                            title='Выбор редакции'
-                            iconType='editors'
-                            items={editorsChoice}
-                            onOpenApp={onOpenApp}
-                            variant='plain'
-                        />
+                        <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.7s both` }}>
+                            <AppsSliderBlock
+                                title='Выбор редакции'
+                                iconType='editors'
+                                items={editorsChoice}
+                                onOpenApp={onOpenApp}
+                                variant='plain'
+                            />
+                        </Box>
                     )}
                 </Stack>
 
-                <SearchAndSortBar
-                    searchQuery={searchQuery}
-                    onSearchChange={onSearchChange}
-                    sortBy={sortBy}
-                    onSortChange={onSortChange}
-                />
+                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.8s both` }}>
+                    <SearchAndSortBar
+                        searchQuery={searchQuery}
+                        onSearchChange={onSearchChange}
+                        sortBy={sortBy}
+                        onSortChange={onSortChange}
+                    />
 
-                <CategoriesChipsRow
-                    selectedCategory={selectedCategory}
-                    onSelectCategory={onSelectCategory}
-                />
+                    <CategoriesChipsRow
+                        selectedCategory={selectedCategory}
+                        onSelectCategory={onSelectCategory}
+                    />
+                </Box>
 
-                <AllAppsSection
-                    list={list}
-                    isLoading={isLoading}
-                    onOpenApp={onOpenApp}
-                />
+                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.9s both` }}>
+                    <AllAppsSection
+                        list={list}
+                        isLoading={isLoading}
+                        onOpenApp={onOpenApp}
+                    />
+                </Box>
             </Box>
         </PageWrapper>
     );
