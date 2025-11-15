@@ -95,19 +95,23 @@ const MainScreen = ({
                     mt: 2,
                     animation: `${fadeUp} 0.5s ease-out`,
                 }}>
-                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.1s both` }}>
+                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.1s both`, mb: 2.5 }}>
                     <DailyRecommendationSection
                         dailyRecommendation={dailyRecommendation}
                         onOpenApp={onOpenApp}
                     />
                 </Box>
 
-                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.2s both` }}>
+                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.2s both`, mb: 2.5 }}>
                     <AchievementsSection achievements={achievements} />
                 </Box>
 
                 {recentlyViewedApps && recentlyViewedApps.length > 0 && (
-                    <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.3s both` }}>
+                    <Box
+                        sx={{
+                            animation: `${fadeUp} 0.6s ease-out 0.3s both`,
+                            mb: 2.5, 
+                        }}>
                         <AppsSliderBlock
                             title='Вы недавно смотрели'
                             items={recentlyViewedApps}
@@ -118,7 +122,11 @@ const MainScreen = ({
                 )}
 
                 {recommendedApps && recommendedApps.length > 0 && (
-                    <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.4s both` }}>
+                    <Box
+                        sx={{
+                            animation: `${fadeUp} 0.6s ease-out 0.4s both`,
+                            mb: 3,
+                        }}>
                         <AppsSliderBlock
                             title='Рекомендации для вас'
                             items={recommendedApps}
@@ -140,7 +148,7 @@ const MainScreen = ({
                                 onOpenApp={onOpenApp}
                                 variant='plain'
                                 autoPlay
-                                autoPlayInterval={5000} 
+                                autoPlayInterval={9000}
                             />
                         </Box>
                     )}
@@ -153,8 +161,8 @@ const MainScreen = ({
                                 items={newApps}
                                 onOpenApp={onOpenApp}
                                 variant='plain'
-                                autoPlay 
-                                autoPlayInterval={7000} 
+                                autoPlay
+                                autoPlayInterval={11000}
                             />
                         </Box>
                     )}
@@ -172,7 +180,7 @@ const MainScreen = ({
                     )}
                 </Stack>
 
-                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.8s both` }}>
+                <Box sx={{ animation: `${fadeUp} 0.6s ease-out 0.8s both`, mb: 1.5 }}>
                     <SearchAndSortBar
                         searchQuery={searchQuery}
                         onSearchChange={onSearchChange}
